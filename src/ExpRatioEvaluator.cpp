@@ -113,16 +113,13 @@ bool ExpRatioEvaluator::isRectangleInside()
 	double distUp;
 	double distDown;
 
-
-	
-
 	distSx =  pow(pow(double(0-x),2),0.5);
 	//cout << "DistSx: " << distSx << endl;
-	distDx =  pow(pow(double(cols-x),2),0.5);
+	distDx =  pow(pow(double(cols-1-x),2),0.5);
 	//cout << "DistDx: " << distDx << endl;
 	distUp =  pow(pow(double(0-y),2),0.5);
 	//cout << "DistUp: " << distUp << endl;
-	distDown =  pow(pow(double(rows-y),2),0.5);
+	distDown =  pow(pow(double(rows-1-y),2),0.5);
 	//cout << "DistDown: " << distDown << endl;
 	if(distSx < size || distDx < size || distUp < size || distDown < size)
 		return false;
@@ -153,6 +150,8 @@ double* ExpRatioEvaluator::computeExpRatioValues()
 		exit (EXIT_FAILURE);
 	}
 
+	
+
 	/*for(int i = 0; i<rows; i++){
 		for(int j=0; j < cols; j++){
 			cout << image[i][j]<< " ";
@@ -163,6 +162,7 @@ double* ExpRatioEvaluator::computeExpRatioValues()
 
 	agileMap->GetRowCol(l,b,&x,&y);
 	
+	//cout << "x: "<<x<<" y: "<<y<<"  size: "<<size<<endl;
 
 	xmin = x - size;
 	xmax = x + size;
@@ -179,13 +179,13 @@ double* ExpRatioEvaluator::computeExpRatioValues()
 	//cout << "ymin: " << ymin << endl;
 	//cout << "ymax: " << ymax << endl;
 	
-	
+ 
 	if(isRectangleInside()) 
-	{
+	{	
 		for(int i = xmin; i <= xmax; i++) 
 		{
 			for(int j= ymin; j <= ymax; j++) 
-			{
+			{	//cout << " i: "<<i<<" j: "<<j<<endl;
 				totCount+=1;
 				tmp=(double)image[i][j];
 				greyLevelSum+=tmp;

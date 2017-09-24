@@ -36,23 +36,26 @@ int main()
 	//Mat image;
 	
 	const char *expFilePath = "exp.exp";
-	double minTreshold = 9.5;
-	double maxTreshold = 15;
+	double minTreshold = 9;
+	double maxTreshold = 10;
 	
 	// caso rettangolo fuori	
 	//double l = 81;
 	//double b = 49;
 	
 	// caso buono
-	//double l = 45;
-	//double b = 31;
+	double l = 45;
+	double b = 31;
 
-	// caso fuori range	
-	double l = 26;
-	double b = 39;	
+	// caso ERRORE DI SEGMENTAZIONE
+	//double l = 25;
+	//double b = 40;	
 
 	ExpRatioEvaluator exp(expFilePath,minTreshold,maxTreshold,l,b);
 	double *output = exp.computeExpRatioValues();
+	
+ 
+
 	if(exp.isRectangleInside()) {
 		for(int i=0; i<4; i++) {
 			cout << output[i] << endl;
