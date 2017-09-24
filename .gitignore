@@ -49,3 +49,4 @@ AgileRealImages/*
 *.swp
 *.save
 *.exp
+src/Main.cpp
