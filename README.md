@@ -29,5 +29,5 @@ che ritorna il seguente array:
 	Per l'apertura del file Fits. 
 
 	AgileMap:
-	Si utilizzano le funzione di conversione pixel->coordinate galattiche e viceversa.
+	Si utilizzano le funzione di conversione pixel->coordinate galattiche e viceversa
 	
