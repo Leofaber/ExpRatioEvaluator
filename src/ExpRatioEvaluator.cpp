@@ -38,7 +38,7 @@ bool ExpRatioEvaluator::convertFitsDataToMatrix()
 	long naxes[2] = { 1, 1 }, fpixel[2] = { 1, 1 };
 	double *pixels;
 	char format[20], hdformat[20];
-		
+			
 
 	if (!fits_open_file(&fptr, expPath, READONLY, &status))
 	{									// 16   , 2     , {166,166}
@@ -114,13 +114,9 @@ bool ExpRatioEvaluator::isRectangleInside()
 	double distDown;
 
 	distSx =  pow(pow(double(0-x),2),0.5);
-	//cout << "DistSx: " << distSx << endl;
 	distDx =  pow(pow(double(cols-1-x),2),0.5);
-	//cout << "DistDx: " << distDx << endl;
 	distUp =  pow(pow(double(0-y),2),0.5);
-	//cout << "DistUp: " << distUp << endl;
 	distDown =  pow(pow(double(rows-1-y),2),0.5);
-	//cout << "DistDown: " << distDown << endl;
 	if(distSx < size || distDx < size || distUp < size || distDown < size)
 		return false;
 	else
@@ -140,52 +136,25 @@ double* ExpRatioEvaluator::computeExpRatioValues()
 	double greyLevelSum = 0;
 	double mean = 0;
 		
-
-	
-
-	
 	if(! convertFitsDataToMatrix() )
 	{
 		fprintf( stderr, "convertFitsDataToMatrix() Error reading fits file\n");
 		exit (EXIT_FAILURE);
 	}
 
-	
-
-	/*for(int i = 0; i<rows; i++){
-		for(int j=0; j < cols; j++){
-			cout << image[i][j]<< " ";
-		}
-		cout << "\n";
-	}
-	*/
-
 	agileMap->GetRowCol(l,b,&x,&y);
 	
-	//cout << "x: "<<x<<" y: "<<y<<"  size: "<<size<<endl;
-
 	xmin = x - size;
 	xmax = x + size;
 	ymin = y - size;
 	ymax = y + size;
 	
-	
-	//cout << "minThreshold: " << minThreshold << endl;
-	//cout << "maxThreshold: " << maxThreshold << endl;
-	//cout << "size: " << size << endl;
-	//cout << "row " << y << " col: " << x << "\n" << endl;
-	//cout << "xmin: " << xmin << endl;
-	//cout << "xmax: " << xmax << endl;
-	//cout << "ymin: " << ymin << endl;
-	//cout << "ymax: " << ymax << endl;
-	
- 
 	if(isRectangleInside()) 
 	{	
 		for(int i = xmin; i <= xmax; i++) 
 		{
 			for(int j= ymin; j <= ymax; j++) 
-			{	//cout << " i: "<<i<<" j: "<<j<<endl;
+			{	
 				totCount+=1;
 				tmp=(double)image[i][j];
 				greyLevelSum+=tmp;
@@ -194,7 +163,6 @@ double* ExpRatioEvaluator::computeExpRatioValues()
 			}
 		}
 	
-		//expRatio = nBad/totCount;
 		output[0] = nBad/totCount;
 		output[1] = nBad;
 		output[2] = totCount;
@@ -204,7 +172,9 @@ double* ExpRatioEvaluator::computeExpRatioValues()
 	}else 
 	{
 		fprintf( stderr, "Rectangle is not completely inside!\n");
-		exit (EXIT_FAILURE);
+		output[0] = output[1] = output[2] = output[3] = -1;
+		return output;
+
 	}
 }
 
