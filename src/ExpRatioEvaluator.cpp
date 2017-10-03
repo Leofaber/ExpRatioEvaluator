@@ -8,12 +8,15 @@
 */
 
 #include "ExpRatioEvaluator.h"
+//#include "Eval.h"
 
 using namespace std; 
 
-ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath, double _minThreshold, double _maxThreshold, double _l, double _b) 
+ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath, bool _normalized, double _minThreshold, double _maxThreshold, double _l, double _b) 
 {
 	expPath=_expPath;
+	normalized=_normalized;
+	normalizationFactor = 1;
 	minThreshold=_minThreshold;
 	maxThreshold=_maxThreshold;
 	l=_l;
@@ -21,10 +24,25 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath, double _minThreshold
 	x=0;
 	y=0;	
 	agileMap=new AgileMap(expPath);
+	tStart=agileMap->GetTstart();
+	tStop=agileMap->GetTstop();
+	timeFactor=tStop-tStart;
+	spatialFactor;
 	double cdelt2=agileMap->GetYbin();
+	//cout << "cdelt2: " << cdelt2 << endl;
 	size = 10/cdelt2;
 	
+	if(normalized==false) {
+		spatialFactor = 0.0003046174197867085688996857673060958405*cdelt2*cdelt2;
+		normalizationFactor = spatialFactor*timeFactor;
+	}
+		
+		cout << "timeFactor: " << timeFactor << endl;
+		cout << "spatialFactor: " << spatialFactor << endl;
+		cout << "normalizatioFactor: " << normalizationFactor << endl;
+	
 } 
+
 
 bool ExpRatioEvaluator::convertFitsDataToMatrix()
 {
@@ -79,7 +97,9 @@ bool ExpRatioEvaluator::convertFitsDataToMatrix()
 
 						for (ii = 0; ii < naxes[0]; ii++)
 						{
-							image[row_index][col_index] = (double)pixels[ii];
+							
+							image[row_index][col_index] = (double)pixels[ii]/normalizationFactor;
+							
 							col_index++;
 						}
 						col_index = 0;
