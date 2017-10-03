@@ -12,19 +12,10 @@
 
 using namespace std; 
 
-ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath, bool _normalize, double _minThreshold, double _maxThreshold, double _l, double _b) 
+ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath) 
 {
 	expPath=_expPath;
-	normalize=_normalize;
- 
 	
-	minThreshold=_minThreshold;
-	maxThreshold=_maxThreshold;
-	
-	l=_l;
-	b=_b;
-	x=0;
-	y=0;	
 	agileMap=new AgileMap(expPath);
 	
 	tStart=agileMap->GetTstart();
@@ -39,7 +30,11 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath, bool _normalize, dou
 	normalizationFactor = spatialFactor*timeFactor;
 	
 		
-			
+	if(! convertFitsDataToMatrix() )
+	{
+		fprintf( stderr, "convertFitsDataToMatrix() Error reading fits file\n");
+		exit (EXIT_FAILURE);
+	}
 } 
 
 
@@ -130,7 +125,7 @@ bool ExpRatioEvaluator::convertFitsDataToMatrix()
 }
 
 
-bool ExpRatioEvaluator::isRectangleInside() 
+bool ExpRatioEvaluator::isRectangleInside(int x, int y) 
 {
 	double distSx;
 	double distDx;
@@ -149,12 +144,12 @@ bool ExpRatioEvaluator::isRectangleInside()
 	
 }
 
-double* ExpRatioEvaluator::computeExpRatioValues() 
+double* ExpRatioEvaluator::computeExpRatioValues(double l, double b, bool onNormalizeMap, double minThreshold, double maxThreshold) 
 { 
 		
 	cout << "MinThreshold: "<< minThreshold << endl;
 	cout << "MaxThreshold: " << maxThreshold << endl;
-	if(normalize)
+	if(onNormalizeMap)
 		cout << "ExpRatioEvaluator will compute exp-ratio value of the normalized map" << endl;
 	else	
 		cout << "ExpRatioEvaluator will compute exp-ratio value of the NO-normalized map" << endl;	
@@ -168,11 +163,10 @@ double* ExpRatioEvaluator::computeExpRatioValues()
 	double greyLevelSum = 0;
 	double mean = 0;
 		
-	if(! convertFitsDataToMatrix() )
-	{
-		fprintf( stderr, "convertFitsDataToMatrix() Error reading fits file\n");
-		exit (EXIT_FAILURE);
-	}
+	
+
+	int x;
+	int y;
 
 	agileMap->GetRowCol(l,b,&x,&y);
 	
@@ -181,14 +175,14 @@ double* ExpRatioEvaluator::computeExpRatioValues()
 	ymin = y - size;
 	ymax = y + size;
 	
-	if(isRectangleInside()) 
+	if(isRectangleInside(x,y)) 
 	{	
 		for(int i = xmin; i <= xmax; i++) 
 		{
 			for(int j= ymin; j <= ymax; j++) 
 			{	
 				totCount+=1;
-				if(normalize) 
+				if(onNormalizeMap) 
 					tmp=(double)normalizedImage[i][j];
 				else
 					tmp=(double)image[i][j];
@@ -201,15 +195,18 @@ double* ExpRatioEvaluator::computeExpRatioValues()
 		}
 	
 		output[0] = (1-(nBad/totCount))*100;
-		/*output[1] = nBad;
+		output[1] = nBad;
 		output[2] = totCount;
-		output[3] = greyLevelSum/totCount;	*/
+		output[3] = greyLevelSum/totCount;
 		return output;
 
 	}else 
 	{
 		fprintf( stderr, "Rectangle is not completely inside!\n");
-		output[0] =  -1; //output[1] = output[2] = output[3] =
+		output[0] =  -1;
+		output[1] =  -1;
+		output[2] =  -1;
+		output[3] =  -1;
 		return output;
 
 	}

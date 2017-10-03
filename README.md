@@ -1,4 +1,4 @@
-# ExpRatioEvaluator 1.0.5
+# ExpRatioEvaluator 1.0.6
 
 Traduzione della routine exp-ratio, attualmente eseguita con script shell che utilizza tool esterni.
 Questa routine permette di valutare quando una “detection” o “spot” è troppo vicina ai bordi dell’esposure AGILE.
@@ -21,14 +21,15 @@ Per rendere indipendente la mappa dal tempo di esposizione, si normalizza divide
 
 La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che deve essere instanziata chiamando il seguente costruttore:
 	
-	ExpRatioEvaluator(const char * _expPath,bool normalize, double minTreshold, double maxTreshold, double l, double b);
-
-	Se normalize == true allora si calcola l'exp-ratio sulla mappa normalizzata.
+	ExpRatioEvaluator(const char * _expPath);
 
 
 Per calcolare exp-ratio si deve chiamare il metodo: 
 
-	double computeExpRatioValues();
+	double* computeExpRatioValues(bool normalize, double minTreshold, double maxTreshold, double l, double b);
+
+	Se normalize == true allora si calcola l'exp-ratio sulla mappa normalizzata.
+
 
 che ritorna il seguente array:
 
@@ -49,6 +50,33 @@ che ritorna il seguente array:
  
 
 	normalizzata: 112.302 111.401 110.5 110.742 110.985 111.183 111.381 111.51 111.639 111.742 111.844 111.929 112.014 112.081 112.149 112.192 112.236 112.142 112.047 111.914 111.78 112.234 112.687 113.177 113.668 112.636 111.604 111.716 111.827 111.917 112.007 112.078 112.148 112.18 112.213 112.167 112.121 111.968 111.816 111.59 111.364 111.095 110.825 110.526 110.227 109.882 109.536 108.157 106.777 107.166 107.554 107.951 108.348 108.215 108.082 107.904 107.727 107.433 107.14 106.792 106.444 106.074 105.703 105.306 104.908 104.469 104.029 102.975 101.921 101 100.079 99.6959 99.3132 98.9086 98.504 98.0483 97.5927 97.6653 97.738 97.791 97.844 97.3487 96.8533 96.3139 95.7745 95.2018 94.629 94.0067 93.3844 91.8182 90.252 89.7711 89.2902 88.7508 88.2115 87.6136 87.0157 86.3692 85.7228 85.0527 
+
+
+### Esempi di output:
+
+	computeExpRatioValues(bool normalize, double minTreshold, double maxTreshold, double l, double b);
+	[ exp-ratio, nBad, totCount, greyLevelsMean ]
+
+	exp.computeExpRatioValues(30,30,false,10,11);
+	exp-ratio: 47.6502 880 1681 9.93831
+
+	exp.computeExpRatioValues(30,30,false,0,100);
+	exp-ratio: 100 0 1681 9.93831
+
+	exp.computeExpRatioValues(30,30,false,0,5);
+	exp-ratio: 0 1681 1681 9.93831
+
+
+	exp.computeExpRatioValues(30,30,true,50,150);
+	exp-ratio: 100 0 1681 130.502
+
+	exp.computeExpRatioValues(30,30,true,129,131);
+	exp-ratio: 16.2403 1408 1681 130.502
+
+
+	exp.computeExpRatioValues(30,30,true,0,50);
+	exp-ratio: 0 1681 1681 130.502
+
 
 
 	 
