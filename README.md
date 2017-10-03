@@ -26,7 +26,7 @@ La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che dev
 
 Per calcolare exp-ratio si deve chiamare il metodo: 
 
-	double* computeExpRatioValues(bool normalize, double minTreshold, double maxTreshold, double l, double b);
+	double* computeExpRatioValues(double l, double b, bool onNormalizeMap, double minThreshold, double maxThreshold);
 
 	Se normalize == true allora si calcola l'exp-ratio sulla mappa normalizzata.
 
@@ -54,7 +54,7 @@ che ritorna il seguente array:
 
 ### Esempi di output:
 
-	computeExpRatioValues(bool normalize, double minTreshold, double maxTreshold, double l, double b);
+	computeExpRatioValues(double l, double b, bool onNormalizeMap, double minThreshold, double maxThreshold);
 	[ exp-ratio, nBad, totCount, greyLevelsMean ]
 
 	exp.computeExpRatioValues(30,30,false,10,11);
