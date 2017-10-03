@@ -44,6 +44,8 @@ class ExpRatioEvaluator
 	int rows;
 	int cols;
 	double ** image;
+	double ** normalizedImage;
+
 	bool convertFitsDataToMatrix();
 	
 	// The output array  [ exp-ratio, nBad, nTot, greyLevelMean ]	
@@ -54,9 +56,14 @@ class ExpRatioEvaluator
 	/*
 		Computes and returns the output array. 
 		exp-ratio is defined as nBad/nTot. 
-		If the rectangle is not entirely inside the image, it fails.
+		If the rectangle is not entirely inside the image, it returns -1 -1 -1 -1.
 	*/	
 	double* computeExpRatioValues();	
+
+	double ** getNormalizedImage();
+
+	int getRows();
+	int getCols();
 	
 	
 };
