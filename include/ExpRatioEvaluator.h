@@ -2,27 +2,12 @@
 #include <stdlib.h> 
 #include "fitsio.h" 
 #include "AgileMap.h"
-#include "Eval.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <cmath>
-#include <cstring>
-#include <prj.h>
-#include <wcstrig.h>
-#include <sph.h>
-#include <CalibUtils.h>
-#include <FitsUtils.h>
-#include <MathUtils.h>
-
-#include "Selection.h"
-
-
-
  
 using namespace std;
-
-
 
 class ExpRatioEvaluator
 {

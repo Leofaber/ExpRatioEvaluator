@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2017
- *     Leonardo Baroncelli, Giancarlo Zollino (IASF-Bologna),
+ *     Leonardo Baroncelli, Giancarlo Zollino,
  *
  * Any information contained in this software
  * is property of the AGILE TEAM and is strictly
@@ -8,7 +8,7 @@
 */
 
 #include "ExpRatioEvaluator.h"
-//#include "Eval.h"
+
 
 using namespace std; 
 
@@ -17,17 +17,20 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath, bool _normalize, dou
 	expPath=_expPath;
 	normalize=_normalize;
 	normalizationFactor = 1;
+	
 	minThreshold=_minThreshold;
 	maxThreshold=_maxThreshold;
+	
 	l=_l;
 	b=_b;
 	x=0;
 	y=0;	
 	agileMap=new AgileMap(expPath);
+	
 	tStart=agileMap->GetTstart();
 	tStop=agileMap->GetTstop();
 	timeFactor=tStop-tStart;
-	spatialFactor;
+ 
 	double cdelt2=agileMap->GetYbin();
 	size = 10/cdelt2;
 	
@@ -95,11 +98,12 @@ bool ExpRatioEvaluator::convertFitsDataToMatrix()
 						{
 							
 							image[row_index][col_index] = (double)pixels[ii]/normalizationFactor;
-							
+							//cout << image[row_index][col_index] << " ";
 							col_index++;
 						}
 						col_index = 0;
 						row_index++;
+						//cout << "\n";
 					}
 
 					free(pixels);
@@ -143,6 +147,14 @@ bool ExpRatioEvaluator::isRectangleInside()
 
 double* ExpRatioEvaluator::computeExpRatioValues() 
 { 
+		
+	cout << "MinThreshold: "<< minThreshold << endl;
+	cout << "MaxThreshold: " << maxThreshold << endl;
+	if(normalize)
+		cout << "ExpRatioEvaluator will perform a normalization of the exp map" << endl;
+	else	
+		cout << "ExpRatioEvaluator will NOT perform a normalization of the exp map" << endl;	
+
  	int xmin, xmax, ymin,ymax;
 	int npixel = 0;
 	int nBad = 0;
