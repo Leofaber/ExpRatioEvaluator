@@ -26,11 +26,11 @@ using namespace std;
 
 class ExpRatioEvaluator
 {
-	public: ExpRatioEvaluator(const char * expPath,bool normalized, double minTreshold, double maxTreshold, double l, double b);
+	public: ExpRatioEvaluator(const char * expPath,bool normalize, double minTreshold, double maxTreshold, double l, double b);
 
 
 	const char* expPath;
-	bool normalized;
+	bool normalize;
 	double normalizationFactor;
 	double tStart;
 	double tStop;

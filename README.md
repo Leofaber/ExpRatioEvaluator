@@ -12,7 +12,15 @@ In particolare si definisce exp-ratio come:
 
 La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che deve essere instanziata chiamando il seguente costruttore:
 	
-	ExpRatioEvaluator(const char * _expPath, double minTreshold, double maxTreshold, double l, double b);
+	ExpRatioEvaluator(const char * _expPath,bool normalize, double minTreshold, double maxTreshold, double l, double b);
+
+Se normalize == true		->		normalizationFactor = spatialFactor * timeFactor;
+Se normalize == false		->		normalizationFactor = 1;
+
+Dove:
+	timeFactor = tStop - tStart;
+	spatialFactor = 0.0003046174197867085688996857673060958405 * cdelt2 * cdelt2;
+	
 
 Per calcolare exp-ratio si deve chiamare il metodo: 
 

@@ -12,10 +12,10 @@
 
 using namespace std; 
 
-ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath, bool _normalized, double _minThreshold, double _maxThreshold, double _l, double _b) 
+ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath, bool _normalize, double _minThreshold, double _maxThreshold, double _l, double _b) 
 {
 	expPath=_expPath;
-	normalized=_normalized;
+	normalize=_normalize;
 	normalizationFactor = 1;
 	minThreshold=_minThreshold;
 	maxThreshold=_maxThreshold;
@@ -29,18 +29,14 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath, bool _normalized, do
 	timeFactor=tStop-tStart;
 	spatialFactor;
 	double cdelt2=agileMap->GetYbin();
-	//cout << "cdelt2: " << cdelt2 << endl;
 	size = 10/cdelt2;
 	
-	if(normalized==false) {
+	if(normalize==true) {
 		spatialFactor = 0.0003046174197867085688996857673060958405*cdelt2*cdelt2;
 		normalizationFactor = spatialFactor*timeFactor;
 	}
 		
-		cout << "timeFactor: " << timeFactor << endl;
-		cout << "spatialFactor: " << spatialFactor << endl;
-		cout << "normalizatioFactor: " << normalizationFactor << endl;
-	
+			
 } 
 
 
@@ -184,15 +180,15 @@ double* ExpRatioEvaluator::computeExpRatioValues()
 		}
 	
 		output[0] = (1-(nBad/totCount))*100;
-		output[1] = nBad;
+		/*output[1] = nBad;
 		output[2] = totCount;
-		output[3] = greyLevelSum/totCount;	
+		output[3] = greyLevelSum/totCount;	*/
 		return output;
 
 	}else 
 	{
 		fprintf( stderr, "Rectangle is not completely inside!\n");
-		output[0] = output[1] = output[2] = output[3] = -1;
+		output[0] =  -1; //output[1] = output[2] = output[3] =
 		return output;
 
 	}
