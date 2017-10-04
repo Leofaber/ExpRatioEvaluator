@@ -10,8 +10,6 @@
 #include "ExpRatioEvaluator.h"
 
 
-using namespace std; 
-
 ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath) 
 {
 	expPath=_expPath;
@@ -29,13 +27,19 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath)
 	spatialFactor = 0.0003046174197867085688996857673060958405*cdelt2*cdelt2;
 	normalizationFactor = spatialFactor*timeFactor;
 	
-		
+	// Initialization of image and normalizedImage
 	if(! convertFitsDataToMatrix() )
 	{
 		fprintf( stderr, "[ExpRatioEvaluator] ERROR!! convertFitsDataToMatrix(): error reading fits file\n");
 		exit (EXIT_FAILURE);
 	}
 
+
+	// Writing of normalizedImage
+	if( writeMatrixDataInAgileMapFile( normalizedImage, agileMap,  "exp_norm.exp") )	
+		cout << "\nCreated AgileMap file: exp_norm.exp" << endl;
+	else
+		cout << "\nCAN'T create AgileMap file: exp_norm.exp" << endl;
 	
 } 
 
@@ -146,15 +150,42 @@ bool ExpRatioEvaluator::isRectangleInside(int x, int y)
 	
 }
 
+
+
+
 double* ExpRatioEvaluator::computeExpRatioValues(double l, double b, bool onNormalizeMap, double minThreshold, double maxThreshold) 
 { 
-		
-	cout << "MinThreshold: "<< minThreshold << endl;
+	int x;
+	int y;
+
+	agileMap->GetRowCol(l,b,&x,&y);
+	if(x < 0 || x > cols-1 || y < 0 || y > rows-1)
+	{
+		fprintf( stderr, "[ExpRatioEvaluator] ERROR!! computeExpRatioValues(double l, double b, bool onNormalizeMap, double minThreshold, double maxThreshold):  Map .cts and Map .exp are not centered in the same galactic coordinate because input l and input b go out of the .exp map\n");
+		output[0] =  -2;
+		output[1] =  -2;
+		output[2] =  -2;
+		output[3] =  -2;
+		return output;
+	}
+	return computeExpRatio(x, y, onNormalizeMap, minThreshold, maxThreshold);
+}
+
+
+double* ExpRatioEvaluator::computeExpRatioValues(int x, int y, string type, bool onNormalizeMap, double minThreshold, double maxThreshold)
+{	
+	return computeExpRatio(x, y, onNormalizeMap, minThreshold, maxThreshold);
+}
+
+
+double * ExpRatioEvaluator::computeExpRatio(int x, int y, bool onNormalizeMap, double minThreshold, double maxThreshold){
+	
+	/*cout << "MinThreshold: "<< minThreshold << endl;
 	cout << "MaxThreshold: " << maxThreshold << endl;
 	if(onNormalizeMap)
 		cout << "ExpRatioEvaluator will compute exp-ratio value of the normalized map" << endl;
 	else	
-		cout << "ExpRatioEvaluator will compute exp-ratio value of the NO-normalized map" << endl;	
+		cout << "ExpRatioEvaluator will compute exp-ratio value of the NO-normalized map" << endl;	*/
 
  	int xmin, xmax, ymin,ymax;
 	int npixel = 0;
@@ -165,29 +196,12 @@ double* ExpRatioEvaluator::computeExpRatioValues(double l, double b, bool onNorm
 	double greyLevelSum = 0;
 	double mean = 0;
 		
-	
-
-	int x;
-	int y;
-
-	agileMap->GetRowCol(l,b,&x,&y);
-	cout << x << " " << y << endl;
-	cout << cols << " " << rows << endl;
-	if(x < 0 || x > cols-1 || y < 0 || y > rows-1){
-		fprintf( stderr, "[ExpRatioEvaluator] ERROR!! computeExpRatioValues(double l, double b, bool onNormalizeMap, double minThreshold, double maxThreshold):  Map .cts and Map .exp are not centered in the same galactic coordinate because input l and input b go out of the .exp map\n");
-		output[0] =  -2;
-		output[1] =  -2;
-		output[2] =  -2;
-		output[3] =  -2;
-		return output;
-	}
-
-	
 	xmin = x - size;
 	xmax = x + size;
 	ymin = y - size;
 	ymax = y + size;
-	
+
+
 	if(isRectangleInside(x,y)) 
 	{	
 		for(int i = xmin; i <= xmax; i++) 
@@ -215,7 +229,7 @@ double* ExpRatioEvaluator::computeExpRatioValues(double l, double b, bool onNorm
 
 	}else 
 	{
-		fprintf( stderr, "Rectangle is not completely inside!\n");
+		//fprintf( stderr, "Rectangle is not completely inside!\n");
 		output[0] =  -1;
 		output[1] =  -1;
 		output[2] =  -1;
@@ -225,14 +239,148 @@ double* ExpRatioEvaluator::computeExpRatioValues(double l, double b, bool onNorm
 	}
 }
 
-double ** ExpRatioEvaluator::getNormalizedImage(){
-	return normalizedImage;
-}
 
+ 
 int ExpRatioEvaluator::getRows(){
 	return rows;
 }
 int ExpRatioEvaluator::getCols(){
 	return cols;
+}
+
+bool ExpRatioEvaluator::writeMatrixDataInAgileMapFile(double ** matrixData, AgileMap * agileMapForCopy, const char * filename){
+	// copio il file AgileMap
+	AgileMap* newMap = new AgileMap(*agileMapForCopy);
+	
+	// lo scrivo su file cambiandogli nome
+	int statusWrite = newMap->Write(filename);
+
+	// copio i dati nel file aprendolo con cfitsio
+	bool statusCopy = copyDataToFitsFile(filename, matrixData);
+
+	if(statusWrite == 0 && statusCopy)
+		return true;
+	else
+		return false;
+
+}
+
+
+
+bool ExpRatioEvaluator::copyDataToFitsFile(const char * pathToAgileMapFile, double ** matrixData){
+	
+	//CFITSIO
+	fitsfile *fptr;    
+	int status = 0;    
+	int bitpix, naxis, ii, anynul;
+	long naxes[2] = { 1, 1 }, fpixel[2] = { 1, 1 };
+	double *pixels;
+	char format[20], hdformat[20];
+			
+
+	if (!fits_open_file(&fptr, pathToAgileMapFile, READWRITE, &status))
+	{									// 16   , 2     , {166,166}
+		if (!fits_get_img_param(fptr, 2, &bitpix, &naxis, naxes, &status))
+		{
+			 		
+ 
+			pixels = (double *)malloc(naxes[0] * sizeof(double));
+
+ 
+
+			int col_index = 0;
+			int row_index = 0;
+			for (fpixel[1] = naxes[1]; fpixel[1] >= 1; fpixel[1]--)
+			{
+
+//int fits_read_pix (fitsfile *fptr, int datatype, long *fpixel, LONGLONG nelements,DTYPE *nulval, > DTYPE *array, int *anynul, int *status)
+//int fits_write_pix(fitsfile *fptr, int datatype, long *fpixel, LONGLONG nelements,DTYPE *array, int *status);
+
+				for (ii = 0; ii < naxes[0]; ii++)
+				{	 
+				 	pixels[ii] = matrixData[row_index][col_index];
+				 	col_index++;
+				}
+				fits_write_pix(fptr, TDOUBLE, fpixel, naxes[0], pixels ,     &status);
+				col_index = 0;
+				row_index++;
+
+			}
+
+			free(pixels);		 
+
+		}
+		else
+		{
+			printf("Can't read fits params\n");
+			return false;
+		}
+
+		fits_close_file(fptr, &status);
+
+	}else
+	{
+		printf("Can't open fits file\n");
+		return false;	
+	}
+
+	return true;
+	
+}
+
+double ** ExpRatioEvaluator::createExpRatioPixelMap(bool computeExpRatioOnNormalizedMap, double minThreshold, double maxThreshold){
+
+
+
+		// GENERAZIONE DELLA MAPPA IN CUI OGNI PIXEL E' UN EXP-RATIO
+			
+		// il seguente codice, data la mappa normalizzata, crea una seconda mappa, in cui ogni pixel è il valore di exp-ratio centrato
+		// sul pixel corrispondente della mappa normalizzata. (i bordi saranno -1 perchè il rettangolo fuoriuscirà).
+		// La nuova mappa deve essere inserita in una file CTS leggibile con ds9.
+
+		// dovrebbe uscire una roba del genere:
+
+		// -1 -1 -1 -1 -1 -1 ........
+		// -1 -1 -1 -1 -1 -1 ........
+		// -1 -1... .. .. .. ........
+		// -1 -1...  a  b  c ........
+		// -1 -1...  q  w  e ........
+		// .. .....  x  y  z ........
+		// .. ..... .. .. .. ........
+
+
+		// Algoritmo:
+		
+		// crea una nuova mappa e inizializzala
+		double ** expRatioMap;
+		expRatioMap = new double*[rows];
+				
+		for(int i=0; i<rows; i++) {
+			expRatioMap[i] = new double[cols];
+		}
+					
+		
+		// calcola i valori e inseriscili nella nuova mappa
+		for(int i = 0; i < rows ; i++ ) {
+			for(int j = 0; j < cols; j++) {
+ 
+				double *output2 = computeExpRatioValues(i,j,"PIXEL",computeExpRatioOnNormalizedMap,minThreshold,maxThreshold);
+				expRatioMap[i][j] = output2[0];
+ 
+			}
+			
+		}
+		
+		// stampa (debug)
+	/*	for(int i = 0; i<rows ; i++ ) {
+			for(int j = 0; j < cols; j++) {
+				cout << expRatioMap[i][j] << " ";
+			} 
+			cout << "\n";
+		}*/
+		
+		return expRatioMap;
+
+
 }
 

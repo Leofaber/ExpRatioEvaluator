@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdlib.h> 
-#include "fitsio.h" 
+#include 	
 #include "AgileMap.h"
 #include <iostream>
 #include <iomanip>
@@ -54,11 +54,33 @@ class ExpRatioEvaluator
 		If the rectangle is not entirely inside the image, it returns -1 -1 -1 -1.
 	*/	
 	double* computeExpRatioValues(double l, double b, bool onNormalizeMap, double minThreshold, double maxThreshold);	
+	double* computeExpRatioValues(int x, int y, string type, bool onNormalizeMap, double minThreshold, double maxThreshold);
+	
+	double* computeExpRatio(int x, int y, bool onNormalizeMap, double minThreshold, double maxThreshold);	
 
-	double ** getNormalizedImage();
+	/*
+		Crea un file AgileMap (apribile con ds9). Per far ciò serve un file AgileMap da copiare, una matrice da cui estrarre i dati da inserire nel nuovo file, ed il nome del nuovo file.
+	*/
+	bool writeMatrixDataInAgileMapFile(double ** matrixData, AgileMap * agileMapForCopy, const char * filename);
+
+	/*
+		Apre con cfitsio il file in posizione pathToAgileMapFile e scrive all'interno i valori estratti da matrixData
+	*/
+	bool copyDataToFitsFile(const char * pathToAgileMapFile, double ** matrixData);
+
+
+	/*
+		Crea una mappa in cui il valore di ogni pixel è l'exp-ratio calcolato sul pixel stesso. 
+	*/
+	double ** createExpRatioPixelMap(bool computeExpRatioOnNormalizedMap, double minThreshold, double maxThreshold);
+
 
 	int getRows();
 	int getCols();
+
+	 
 	
+		
 	
+
 };
