@@ -32,9 +32,11 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath)
 		
 	if(! convertFitsDataToMatrix() )
 	{
-		fprintf( stderr, "convertFitsDataToMatrix() Error reading fits file\n");
+		fprintf( stderr, "[ExpRatioEvaluator] ERROR!! convertFitsDataToMatrix(): error reading fits file\n");
 		exit (EXIT_FAILURE);
 	}
+
+	
 } 
 
 
@@ -169,6 +171,17 @@ double* ExpRatioEvaluator::computeExpRatioValues(double l, double b, bool onNorm
 	int y;
 
 	agileMap->GetRowCol(l,b,&x,&y);
+	cout << x << " " << y << endl;
+	cout << cols << " " << rows << endl;
+	if(x < 0 || x > cols-1 || y < 0 || y > rows-1){
+		fprintf( stderr, "[ExpRatioEvaluator] ERROR!! computeExpRatioValues(double l, double b, bool onNormalizeMap, double minThreshold, double maxThreshold):  Map .cts and Map .exp are not centered in the same galactic coordinate because input l and input b go out of the .exp map\n");
+		output[0] =  -2;
+		output[1] =  -2;
+		output[2] =  -2;
+		output[3] =  -2;
+		return output;
+	}
+
 	
 	xmin = x - size;
 	xmax = x + size;

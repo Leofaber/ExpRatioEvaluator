@@ -77,7 +77,10 @@ che ritorna il seguente array:
 	exp.computeExpRatioValues(30,30,true,0,50);
 	exp-ratio: 0 1681 1681 130.502
 
+### Codici di errore
 
+	-1  :  l'area di valutazione (rettangolo) esce fuori dalla mappa.
+	-2  :  le coordinate (l,b) su cui si centra l'area di valutazione escono fuori dalla mappa. Può essere causato dal fatto che le coordinate (l,b) sono il centroide di un blob estratto da una mappa il cui centro non coincide con la relativa mappa di esposizione.
 
 	 
  	
