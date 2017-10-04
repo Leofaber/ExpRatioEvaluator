@@ -37,13 +37,16 @@ che ritorna il seguente array:
 
 ### Altre funzioni:
 
-	Versione overload di computeExpRatioValues(..): si utilizza per non passare dalla conversione (l,b) -> (x,y) ma applicare direttamente la valutazione exp-ratio su (x,y). Type può essere una stringa qualsiasi.
+Versione overload di computeExpRatioValues(..): si utilizza per non passare dalla conversione (l,b) -> (x,y) ma applicare direttamente la valutazione exp-ratio su (x,y). Type può essere una stringa qualsiasi.
+	
 	double* computeExpRatioValues(int x, int y, string type, bool onNormalizeMap, double minThreshold, double maxThreshold);
 	
-	Crea un file AgileMap (apribile con ds9). Per far ciò serve un file AgileMap da copiare, una matrice da cui estrarre i dati da inserire nel nuovo file, ed il nome del nuovo file.
+Crea un file AgileMap (apribile con ds9). Per far ciò serve un file AgileMap da copiare, una matrice da cui estrarre i dati da inserire nel nuovo file, ed il nome del nuovo file.
+	
 	bool writeMatrixDataInAgileMapFile(double ** matrixData, AgileMap * agileMapForCopy, const char * filename);
 	
-	Crea una matrice in cui il valore di ogni pixel è l'exp-ratio calcolato sul pixel stesso.
+Crea una matrice in cui il valore di ogni pixel è l'exp-ratio calcolato sul pixel stesso.
+	
 	double ** createExpRatioPixelMap(bool computeExpRatioOnNormalizedMap, double minThreshold, double maxThreshold);
 	
 	
