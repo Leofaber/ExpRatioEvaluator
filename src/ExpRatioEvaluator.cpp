@@ -5,6 +5,8 @@
  * Any information contained in this software
  * is property of the AGILE TEAM and is strictly
  * private and confidential.
+ * 
+ * https://github.com/Leofaber/ExpRatioEvaluator
 */
 
 #include "ExpRatioEvaluator.h"
