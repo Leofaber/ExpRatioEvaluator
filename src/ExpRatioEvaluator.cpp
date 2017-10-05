@@ -37,8 +37,10 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath)
 	}
 
 
+	
+
 	// Writing of normalizedImage
-	if( writeMatrixDataInAgileMapFile( normalizedImage, agileMap,  "exp_norm.exp") )	
+	if( writeMatrixDataInAgileMapFile( normalizedImage, agileMap,  "norm.exp") )	
 		cout << "\nCreated AgileMap file: exp_norm.exp" << endl;
 	else
 		cout << "\nCAN'T create AgileMap file: exp_norm.exp" << endl;
@@ -249,18 +251,38 @@ int ExpRatioEvaluator::getRows(){
 int ExpRatioEvaluator::getCols(){
 	return cols;
 }
-
-bool ExpRatioEvaluator::writeMatrixDataInAgileMapFile(double ** matrixData, AgileMap * agileMapForCopy, const char * filename){
+																													// _norm.exp
+bool ExpRatioEvaluator::writeMatrixDataInAgileMapFile(double ** matrixData, AgileMap * agileMapForCopy, const char * appendToFilename){
 	// copio il file AgileMap
 	AgileMap* newMap = new AgileMap(*agileMapForCopy);
 	
-	remove( filename );
+	const char * imageName = agileMapForCopy->GetFileName(); // e.g.    MAP1000s.exp
+	string imageName_string(imageName);
+	
+	string newFileName = "";
+	
+    size_t foundPatternExp = imageName_string.find(".exp");
+	size_t foundPatternCts = imageName_string.find(".cts");
+
+    if(foundPatternExp != string::npos)
+		newFileName = imageName_string.substr(0,foundPatternExp);
+	else if(foundPatternCts != string::npos)
+		newFileName = imageName_string.substr(0,foundPatternCts);
+    else
+		newFileName = imageName_string;
+
+	string appendToFilenameString(appendToFilename);
+	newFileName +="_"+appendToFilenameString;
+
+		
+	const char * newFileNameC = newFileName.c_str();
+	remove( newFileNameC );
 
 	// lo scrivo su file cambiandogli nome
-	int statusWrite = newMap->Write(filename);
+	int statusWrite = newMap->Write(newFileNameC);
 
 	// copio i dati nel file aprendolo con cfitsio
-	bool statusCopy = copyDataToFitsFile(filename, matrixData);
+	bool statusCopy = copyDataToFitsFile(newFileNameC, matrixData);
 
 	if(statusWrite == 0 && statusCopy)
 		return true;
@@ -387,4 +409,3 @@ double ** ExpRatioEvaluator::createExpRatioPixelMap(bool computeExpRatioOnNormal
 
 
 }
-

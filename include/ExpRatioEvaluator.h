@@ -19,7 +19,8 @@
 #include <iomanip>
 #include <fstream>
 #include <cmath>
- 
+#include <string>
+
 using namespace std;
 
 class ExpRatioEvaluator
@@ -74,7 +75,7 @@ class ExpRatioEvaluator
 	/*
 		Crea un file AgileMap (apribile con ds9). Per far ciò serve un file AgileMap da copiare, una matrice da cui estrarre i dati da inserire nel nuovo file, ed il nome del nuovo file.
 	*/
-	bool writeMatrixDataInAgileMapFile(double ** matrixData, AgileMap * agileMapForCopy, const char * filename);
+	bool writeMatrixDataInAgileMapFile(double ** matrixData, AgileMap * agileMapForCopy, const char * appendToFilename);
 
 	/*
 		Apre con cfitsio il file in posizione pathToAgileMapFile e scrive all'interno i valori estratti da matrixData
@@ -88,6 +89,7 @@ class ExpRatioEvaluator
 	double ** createExpRatioPixelMap(bool computeExpRatioOnNormalizedMap, double minThreshold, double maxThreshold);
 
 
+	 
 	int getRows();
 	int getCols();
 
