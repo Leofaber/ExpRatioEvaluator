@@ -252,6 +252,8 @@ bool ExpRatioEvaluator::writeMatrixDataInAgileMapFile(double ** matrixData, Agil
 	// copio il file AgileMap
 	AgileMap* newMap = new AgileMap(*agileMapForCopy);
 	
+	remove( filename );
+
 	// lo scrivo su file cambiandogli nome
 	int statusWrite = newMap->Write(filename);
 
