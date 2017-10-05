@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdlib.h> 
-#include 	
+#include "fitsio.h"
 #include "AgileMap.h"
 #include <iostream>
 #include <iomanip>
