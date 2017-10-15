@@ -17,6 +17,7 @@
 #include <fstream>
 #include <cmath>
 #include <string>
+#include <algorithm>
 
 #include "AgileMap.h"
 #include "FitsUtils.h"
