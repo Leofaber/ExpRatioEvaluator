@@ -49,5 +49,6 @@ AgileRealImages/*
 *.swp
 *.save
 *.exp
+*.exp.gz
 src/Main.cpp
 version
