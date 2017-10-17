@@ -602,7 +602,7 @@ string ExpRatioEvaluator::computeNewFileName(const char * appendToFilename){
     
 	   
 
-    newFileName +="_"+appendToFilenameString+"_"+min_str+"_"+max_str+"_"+sqrSize_str+".gz";		
+    newFileName +="_"+min_str+"_"+max_str+"_"+sqrSize_str+"_"+appendToFilenameString+".gz";		
    
     //cout << "newFileName: " << newFileName << endl;  
 
