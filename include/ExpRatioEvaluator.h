@@ -36,12 +36,23 @@ class ExpRatioEvaluator
 		*/
 		ExpRatioEvaluator(const char * expPath,bool onNormalizedMap, double minThreshold, double maxThreshold, int squareSize);
 
+
 		/*
-			Constructor used in multi5 project
+			Creates image extracting pixel values from AgileMap.
+			Creates normalizedImage and expRatioImage, and writes them on file .exp.gz 
+		*/
+		ExpRatioEvaluator(AgileMap agileMap, bool onNormalizedMap, double minThreshold, double maxThreshold, int squareSize);
+
+		/*
+			Creates image extracting pixel values from AgileMap.
+			Creates normalizedImage and expRatioImage, and writes them on file .exp.gz
+		*/
+		ExpRatioEvaluator(const char * expPath, bool onNormalizedMap);
+		/*
 			Creates image extracting pixel values from expPath.
 			Creates normalizedImage and expRatioImage, and writes them on file .exp.gz
 		*/
-		ExpRatioEvaluator(const char * expPath,bool onNormalizedMap);
+		ExpRatioEvaluator(AgileMap agileMap, bool onNormalizedMap);
 
 		/*
 			Computes and returns the output array. 
@@ -112,7 +123,7 @@ class ExpRatioEvaluator
 		/*
 			**************** METHODS ****************
 		*/
-	
+		void createAndWriteImages();
 
 		// Open the exp image and extract the pixel values and store them in the double** image
 		bool convertFitsDataToMatrix();
