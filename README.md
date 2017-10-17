@@ -1,4 +1,4 @@
-# ExpRatioEvaluator 1.0.8
+# ExpRatioEvaluator 1.0.9
 
 La routine exp-ratio permette di valutare quando una “detection” o “spot” è troppo vicina ai bordi dell’esposure AGILE.
 Restituisce un numero compreso tra 0 e 100 (0 bad).
