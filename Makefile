@@ -91,6 +91,7 @@ CXX = g++
 endif
 
 CXXFLAGS = -g -O2 -pipe -I $(INCLUDE_DIR)
+CXXFLAGS += -std=c++11
 
 ifneq (, $(findstring agile, $(LINKERENV)))
     ifeq (, $(findstring -I $(AGILE)/include, $(CXXFLAGS)))
