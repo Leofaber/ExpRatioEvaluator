@@ -23,15 +23,23 @@ La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che dev
     
     ExpRatioEvaluator(const char * expPath,bool onNormalizedMap, double minThreshold, double maxThreshold, int squareSize);
 
+oppure con il seguente costruttore:
+	
+    ExpRatioEvaluator(const char * expPath,bool onNormalizedMap);
+    
+che setta ai valori di default double minThreshold, double maxThreshold, int squareSize.
+
+### Parametri del costruttore
+
     expPath : il path alla mappa (.exp, .cts, .exp.gz, .cts.gz)
     
     onNormalizedMap : se è true si le valutazioni exp ratio verranno effettuate sulla mappa normalizzata (e così anche la creazione della expRatio map), altrimenti verrà usata la mappa non normalizzata.
     
-    minThreshold : la soglia minima per la creazione della mappa exp-ratio
+    minThreshold : la soglia minima per la creazione della mappa exp-ratio. (Se onNormalizedMap==true -> default 100 else default 0)
     
-    maxThreshold : la soglia minima per la creazione della mappa exp-ratio
+    maxThreshold : la soglia minima per la creazione della mappa exp-ratio. (Se onNormalizedMap==true -> default 120 else default 140)
     
-    squareSize : la dimensione dell'area di analisi exp-ratio. Le dimensioni del lato del quadrato sono calcolate come squareSize = _squareSize/cdelt2;
+    squareSize : la dimensione dell'area di analisi exp-ratio. Le dimensioni del lato del quadrato sono calcolate come squareSize = _squareSize/cdelt2;  (default 20)
 
 
     Per calcolare exp-ratio si deve chiamare il metodo:
@@ -53,7 +61,6 @@ Il costruttore crea e scrive su file due mappe:
 ### Output metodo computeExpRatioValues(double l, double b);
 	
 	il valore exp-ratio
-    
     
 
 ### Altre funzioni:
