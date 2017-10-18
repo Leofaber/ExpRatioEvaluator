@@ -23,11 +23,11 @@ La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che dev
 	
 	ExpRatioEvaluator(const char * expPath, bool onNormalizedMap, bool createExpRatioMap);
 	
-	ExpRatioEvaluator(const char * expPath,bool onNormalizedMap, double minThreshold, double maxThreshold, int squareSize, bool createExpRatioMap);
+	ExpRatioEvaluator(const char * expPath,bool onNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 	
 	ExpRatioEvaluator(AgileMap agileMap, bool onNormalizedMap, bool createExpRatioMap);
 	
-	ExpRatioEvaluator(AgileMap agileMap, bool onNormalizedMap, double minThreshold, double maxThreshold, int squareSize, bool createExpRatioMap);
+	ExpRatioEvaluator(AgileMap agileMap, bool onNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 
 
 ### Parametri del costruttore
