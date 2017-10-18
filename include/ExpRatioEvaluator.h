@@ -38,13 +38,13 @@ class ExpRatioEvaluator
 
 		
 		// Creates image extracting pixel values from expPath.
-		ExpRatioEvaluator(const char * expPath,bool onNormalizedMap, double minThreshold, double maxThreshold, int squareSize, bool createExpRatioMap);
+		ExpRatioEvaluator(const char * expPath,bool onNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 		
 		// Creates image extracting pixel values from expPath. Default paramteres.
 		ExpRatioEvaluator(const char * expPath, bool onNormalizedMap, bool createExpRatioMap);
 		 
 		// Creates image extracting pixel values from AgileMap.
-		ExpRatioEvaluator(AgileMap agileMap, bool onNormalizedMap, double minThreshold, double maxThreshold, int squareSize, bool createExpRatioMap);
+		ExpRatioEvaluator(AgileMap agileMap, bool onNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 
 		//  Creates image extracting pixel values from AgileMap. Default paramteres.
 		ExpRatioEvaluator(AgileMap agileMap, bool onNormalizedMap, bool createExpRatioMap);
@@ -78,7 +78,7 @@ class ExpRatioEvaluator
 		/*
 			PRIVATE CONSTRUCTOR: sets the parameters 
 		*/
-		ExpRatioEvaluator(bool onNormalizedMap, double minThreshold, double maxThreshold, bool createExpRatioMap);
+		ExpRatioEvaluator(bool onNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold);
 
 
 

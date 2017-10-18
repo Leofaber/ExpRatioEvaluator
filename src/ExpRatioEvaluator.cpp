@@ -11,7 +11,7 @@
 
 #include "ExpRatioEvaluator.h"
 
-ExpRatioEvaluator::ExpRatioEvaluator(bool _onNormalizedMap, double _minThreshold, double _maxThreshold, bool _createExpRatioMap){
+ExpRatioEvaluator::ExpRatioEvaluator(bool _onNormalizedMap, bool _createExpRatioMap, double _minThreshold, double _maxThreshold){
 
 	onNormalizedMap = _onNormalizedMap;
 	
@@ -23,8 +23,8 @@ ExpRatioEvaluator::ExpRatioEvaluator(bool _onNormalizedMap, double _minThreshold
 
 }
 
-ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _onNormalizedMap, double _minThreshold, double _maxThreshold, int _squareSize, bool _createExpRatioMap) :
-	ExpRatioEvaluator(_onNormalizedMap, _minThreshold, _maxThreshold, _createExpRatioMap)
+ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _onNormalizedMap, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize) :
+	ExpRatioEvaluator(_onNormalizedMap, _createExpRatioMap, _minThreshold, _maxThreshold)
 {	
 
 	expPath=_expPath;
@@ -49,8 +49,8 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _onNormalizedMap
 
 
 
-ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _onNormalizedMap, double _minThreshold, double _maxThreshold, int _squareSize, bool _createExpRatioMap) :
-	ExpRatioEvaluator(_onNormalizedMap, _minThreshold, _maxThreshold, _createExpRatioMap)
+ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _onNormalizedMap, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize) :
+	ExpRatioEvaluator(_onNormalizedMap, _createExpRatioMap, _minThreshold, _maxThreshold)
 {
 
 	/*
@@ -95,14 +95,14 @@ ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _onNormalizedMap, 
 }
 
 ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _onNormalizedMap, bool _createExpRatioMap) : 
-	ExpRatioEvaluator(_expPath,_onNormalizedMap,_onNormalizedMap?120:0,_onNormalizedMap?140:100,10,_createExpRatioMap)
+	ExpRatioEvaluator(_expPath, _onNormalizedMap, _createExpRatioMap, _onNormalizedMap? 120:0 , _onNormalizedMap? 140:100 , 10)
 		
 {
 			
 }
 ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap ,bool _onNormalizedMap, bool _createExpRatioMap) : 
-	ExpRatioEvaluator(_agileMap,_onNormalizedMap,_onNormalizedMap?120:0,_onNormalizedMap?140:100,10,_createExpRatioMap)
-{
+	ExpRatioEvaluator(_agileMap, _onNormalizedMap,_createExpRatioMap, _onNormalizedMap? 120:0 , _onNormalizedMap? 140:100 , 10)
+{ 
 			
 }
 
