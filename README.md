@@ -10,7 +10,7 @@ In particolare si definisce exp-ratio come:
     nBad -> numero di pixels in una regione rettangolare i cui valori non sono compresi in un certo range dato in input alla routine
     nTot -> numero di pixels della regione rettangolare
 
-Per rendere indipendente la mappa dal tempo di esposizione, si normalizza dividendo ogni pixel per un normalizationFactor.
+Per rendere indipendente la mappa dal tempo di esposizione, si può decidere di normalizzarla, dividendo ogni pixel per un normalizationFactor.
     
     normalizationFactor = timeFactor*spatialFactor
     
@@ -23,7 +23,7 @@ La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che dev
 	
 	ExpRatioEvaluator(const char * expPath, bool onNormalizedMap, bool createExpRatioMap);
 	
-	ExpRatioEvaluator(const char * expPath,bool onNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
+	ExpRatioEvaluator(const char * expPath, bool onNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 	
 	ExpRatioEvaluator(AgileMap agileMap, bool onNormalizedMap, bool createExpRatioMap);
 	
@@ -36,7 +36,7 @@ La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che dev
     
     agileMap : la mappa di tipo AgileMap
     
-    onNormalizedMap : se è true si le valutazioni exp ratio verranno effettuate sulla mappa normalizzata (e così anche la creazione della expRatio map), altrimenti verrà usata la mappa non normalizzata.
+    onNormalizedMap : se il valore è true, si assume che la mappa exp in input NON sia normalizzata. Il software provvederà a normalizzarla e le successive valutazioni (il calcolo expratio e la creazione della exp-ratio map) verranno effettuate sulla mappa normalizzata.
     
     minThreshold : la soglia minima per la creazione della mappa exp-ratio. (Se onNormalizedMap==true -> default 100 else default 0)
     
@@ -46,7 +46,7 @@ La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che dev
 
     createExpRatioMap : se è true verrà creata la mappa exp-ratio.
 
-    Per calcolare exp-ratio si deve chiamare il metodo:
+Per calcolare exp-ratio si deve chiamare il metodo:
 
     double computeExpRatioValues(double l, double b);
 
