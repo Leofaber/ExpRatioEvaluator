@@ -38,13 +38,14 @@ La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che dev
     
     onNormalizedMap : se il valore è true, si assume che la mappa exp in input NON sia normalizzata. Il software provvederà a normalizzarla e le successive valutazioni (il calcolo expratio e la creazione della exp-ratio map) verranno effettuate sulla mappa normalizzata.
     
+    createExpRatioMap : se è true verrà creata la mappa exp-ratio.
+    
     minThreshold : la soglia minima per la creazione della mappa exp-ratio. (Se onNormalizedMap==true -> default 100 else default 0)
     
     maxThreshold : la soglia minima per la creazione della mappa exp-ratio. (Se onNormalizedMap==true -> default 120 else default 140)
     
     squareSize : la dimensione dell'area di analisi exp-ratio. Le dimensioni del lato del quadrato sono calcolate come squareSize = _squareSize/cdelt2;  (default 20)
 
-    createExpRatioMap : se è true verrà creata la mappa exp-ratio.
 
 Per calcolare exp-ratio si deve chiamare il metodo:
 
