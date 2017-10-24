@@ -45,7 +45,7 @@ La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che dev
     
     maxThreshold : la soglia minima per la creazione della mappa exp-ratio. (Se onNormalizedMap==true -> default 120 else default 140)
     
-    squareSize : la dimensione dell'area di analisi exp-ratio. Le dimensioni del lato del quadrato sono calcolate come squareSize = _squareSize/cdelt2;  (default 20)
+    squareSize : la dimensione in pixel del lato del quadrato dell'area di analisi exp-ratio. (default 20)
 
 
 Per calcolare exp-ratio si deve chiamare il metodo:
