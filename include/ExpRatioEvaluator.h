@@ -78,7 +78,7 @@ class ExpRatioEvaluator
 		/*
 			PRIVATE CONSTRUCTOR: sets the parameters 
 		*/
-		ExpRatioEvaluator(bool isExpMapAlreadyNormalized, bool createExpRatioMap, double minThreshold, double maxThreshold);
+		ExpRatioEvaluator(bool isExpMapAlreadyNormalized, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 
 
 
