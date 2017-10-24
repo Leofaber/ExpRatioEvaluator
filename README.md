@@ -1,6 +1,7 @@
 # ExpRatioEvaluator 1.0.10
 
 La routine exp-ratio permette di valutare quando una “detection” o “spot” è troppo vicina ai bordi dell’esposure AGILE.
+Tutte le valutazioni vengono fatte su di una mappa exp NORMALIZZATA. (se la mappa in input NON è normalizzata, il software provvederà a normalizzarla)
 Restituisce un numero compreso tra 0 e 100 (0 bad).
 
 In particolare si definisce exp-ratio come:
@@ -10,7 +11,7 @@ In particolare si definisce exp-ratio come:
     nBad -> numero di pixels in una regione rettangolare i cui valori non sono compresi in un certo range dato in input alla routine
     nTot -> numero di pixels della regione rettangolare
 
-Per rendere indipendente la mappa dal tempo di esposizione, si può decidere di normalizzarla, dividendo ogni pixel per un normalizationFactor.
+La mappa viene normalizzata per renderla indipendente dal tempo di esposizione e dalla risoluzione, dividendo ogni pixel per un normalizationFactor.
     
     normalizationFactor = timeFactor*spatialFactor
     
@@ -21,13 +22,13 @@ Per rendere indipendente la mappa dal tempo di esposizione, si può decidere di 
 
 La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che deve essere instanziata chiamando i seguenti costruttori:
 	
-	ExpRatioEvaluator(const char * expPath, bool onNormalizedMap, bool createExpRatioMap);
+	ExpRatioEvaluator(const char * expPath, bool isExpMapNormalized, bool createExpRatioMap);
 	
-	ExpRatioEvaluator(const char * expPath, bool onNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
+	ExpRatioEvaluator(const char * expPath, bool isExpMapNormalized, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 	
-	ExpRatioEvaluator(AgileMap agileMap, bool onNormalizedMap, bool createExpRatioMap);
+	ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpRatioMap);
 	
-	ExpRatioEvaluator(AgileMap agileMap, bool onNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
+	ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 
 
 ### Parametri del costruttore
@@ -36,7 +37,7 @@ La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che dev
     
     agileMap : la mappa di tipo AgileMap
     
-    onNormalizedMap : se il valore è true, si assume che la mappa exp in input NON sia normalizzata. Il software provvederà a normalizzarla e le successive valutazioni (il calcolo expratio e la creazione della exp-ratio map) verranno effettuate sulla mappa normalizzata.
+    isExpMapNormalized : se il valore è false, si afferma che la mappa exp in input NON è normalizzata. Il software provvederà a normalizzarla.
     
     createExpRatioMap : se è true verrà creata la mappa exp-ratio.
     
@@ -59,7 +60,7 @@ Per calcolare exp-ratio si deve chiamare il metodo:
 
 Il costruttore crea e scrive su file due mappe a seconda dei parametri di input:
 
-	Se onNormalizedMap == true, crea la mappa normalizzata il cui filename sarà:  expPath + "_norm.exp.gz", apribile con ds9
+	Se isExpMapNormalized == false, crea la mappa normalizzata il cui filename sarà:  expPath + "_norm.exp.gz", apribile con ds9
   
 	Se createExpRatioMap == true, crea la mappa exp-ratio (in cui ogni pixel è un exp-ratio centrato sul pixel stesso) il cui filename sarà: expPath + "_norm_exp.gz" con ds9
 	
