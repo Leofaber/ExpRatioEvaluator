@@ -519,7 +519,7 @@ double ** ExpRatioEvaluator::createNormalizedImage(){
  
 int ExpRatioEvaluator::writeMatrixDataInAgileMapFile(const char * appendToFilename, double ** matrixData){  
 	
-	cout << "Writing Matrix Data in fits file.."<<endl;
+	//cout << "Writing Matrix Data in fits file.."<<endl;
 	/// Computes new filename
 	const char * newFileNameC;
 
