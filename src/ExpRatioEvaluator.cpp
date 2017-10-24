@@ -11,9 +11,9 @@
 
 #include "ExpRatioEvaluator.h"
 
-ExpRatioEvaluator::ExpRatioEvaluator(bool _onNormalizedMap, bool _createExpRatioMap, double _minThreshold, double _maxThreshold){
+ExpRatioEvaluator::ExpRatioEvaluator(bool _isExpMapNormalized, bool _createExpRatioMap, double _minThreshold, double _maxThreshold){
 
-	onNormalizedMap = _onNormalizedMap;
+	isExpMapNormalized = _isExpMapNormalized;
 	
 	minThreshold = _minThreshold;
 	
@@ -23,8 +23,8 @@ ExpRatioEvaluator::ExpRatioEvaluator(bool _onNormalizedMap, bool _createExpRatio
 
 }
 
-ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _onNormalizedMap, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize) :
-	ExpRatioEvaluator(_onNormalizedMap, _createExpRatioMap, _minThreshold, _maxThreshold)
+ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormalized, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize) :
+	ExpRatioEvaluator(_isExpMapNormalized, _createExpRatioMap, _minThreshold, _maxThreshold)
 {	
 
 	expPath=_expPath;
@@ -49,8 +49,8 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _onNormalizedMap
 
 
 
-ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _onNormalizedMap, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize) :
-	ExpRatioEvaluator(_onNormalizedMap, _createExpRatioMap, _minThreshold, _maxThreshold)
+ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _isExpMapNormalized, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize) :
+	ExpRatioEvaluator(_isExpMapNormalized, _createExpRatioMap, _minThreshold, _maxThreshold)
 {
 
 	/*
@@ -94,14 +94,14 @@ ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _onNormalizedMap, 
 	
 }
 
-ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _onNormalizedMap, bool _createExpRatioMap) : 
-	ExpRatioEvaluator(_expPath, _onNormalizedMap, _createExpRatioMap, _onNormalizedMap? 120:0 , _onNormalizedMap? 140:100 , 10)
+ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormalized, bool _createExpRatioMap) : 
+	ExpRatioEvaluator(_expPath, _isExpMapNormalized, _createExpRatioMap, 120, 140, 10)
 		
 {
 			
 }
-ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap ,bool _onNormalizedMap, bool _createExpRatioMap) : 
-	ExpRatioEvaluator(_agileMap, _onNormalizedMap,_createExpRatioMap, _onNormalizedMap? 120:0 , _onNormalizedMap? 140:100 , 10)
+ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap ,bool _isExpMapNormalized, bool _createExpRatioMap) : 
+	ExpRatioEvaluator(_agileMap, _isExpMapNormalized, _createExpRatioMap, 120, 140, 10)
 { 
 			
 }
@@ -111,11 +111,13 @@ ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap ,bool _onNormalizedMap, 
 void ExpRatioEvaluator::createAndWriteImages(){
 
 
-	//normalized image 
-	if(onNormalizedMap){
+	//if the exp map given in input is NOT already normalized 
+	if(! isExpMapNormalized){
 		normalizedImage = createNormalizedImage();
 		writeMatrixDataInAgileMapFile("norm.exp", normalizedImage);
-	 }
+	 }else{
+		normalizedImage = image;
+	}
 		
 	
 
@@ -313,10 +315,10 @@ double ExpRatioEvaluator::computeExpRatio(int x, int y){
 			for(int j= ymin; j <= ymax; j++) 
 			{	
 				totCount+=1;
-				if(onNormalizedMap) 
-					tmp = (double)normalizedImage[i][j];
-				else
-					tmp=(double)image[i][j];
+				//if(isExpMapNormalized) 
+				tmp = (double)normalizedImage[i][j];
+				//else
+				//	tmp=(double)image[i][j];
 
 				greyLevelSum+=tmp;
  				
@@ -402,15 +404,6 @@ double ** ExpRatioEvaluator::createExpRatioPixelMap(){
 }
 
 
-/*
-		*********************************************************************************************************
-		*********************************************************************************************************
-		*********************************************************************************************************
-		************************************** 				   **************************************
-		*********************************************************************************************************
-		*********************************************************************************************************
-		*********************************************************************************************************
-*/
 
 
 double ExpRatioEvaluator::Alikesinaa(double input){
@@ -524,7 +517,7 @@ double ** ExpRatioEvaluator::createNormalizedImage(){
  
 int ExpRatioEvaluator::writeMatrixDataInAgileMapFile(const char * appendToFilename, double ** matrixData){  
 	
-	
+	cout << "Writing Matrix Data in fits file.."<<endl;
 	/// Computes new filename
 	const char * newFileNameC;
 
@@ -543,6 +536,8 @@ int ExpRatioEvaluator::writeMatrixDataInAgileMapFile(const char * appendToFilena
 		cerr << "ERROR " << f.Status() << " creating " << newFileNameC << endl;
 		return f.Status();
 	}
+	else
+		cout << "Created "<<newFileNameC << endl;	
 
 	
 	int bitpix = DOUBLE_IMG;
@@ -610,6 +605,7 @@ int ExpRatioEvaluator::writeMatrixDataInAgileMapFile(const char * appendToFilena
 
 	if (f.Status())
 		cerr << "ERROR " << f.Status() << " writing to " << newFileNameC << endl;
+	
 	return f.Status();
 
 
