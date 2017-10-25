@@ -11,9 +11,11 @@
 
 #include "ExpRatioEvaluator.h"
 
-ExpRatioEvaluator::ExpRatioEvaluator(bool _isExpMapNormalized, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize){
+ExpRatioEvaluator::ExpRatioEvaluator(bool _isExpMapNormalized, bool _createExpNormalizedMap, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize){
 
 	isExpMapNormalized = _isExpMapNormalized;
+	
+	createExpNormalizedMap = _createExpNormalizedMap;
 	
 	minThreshold = _minThreshold;
 	
@@ -25,8 +27,8 @@ ExpRatioEvaluator::ExpRatioEvaluator(bool _isExpMapNormalized, bool _createExpRa
 
 }
 
-ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormalized, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize) :
-	ExpRatioEvaluator(_isExpMapNormalized, _createExpRatioMap, _minThreshold, _maxThreshold, _squareSize)
+ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormalized, bool _createExpNormalizedMap,bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize) :
+	ExpRatioEvaluator(_isExpMapNormalized, _createExpNormalizedMap,_createExpRatioMap, _minThreshold, _maxThreshold, _squareSize)
 {	
 
 	expPath=_expPath;
@@ -51,8 +53,8 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormali
 
 
 
-ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _isExpMapNormalized, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize) :
-	ExpRatioEvaluator(_isExpMapNormalized, _createExpRatioMap, _minThreshold, _maxThreshold, _squareSize)
+ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _isExpMapNormalized, bool _createExpNormalizedMap, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize) :
+	ExpRatioEvaluator(_isExpMapNormalized, _createExpNormalizedMap, _createExpRatioMap, _minThreshold, _maxThreshold, _squareSize)
 {
 
 	/*
@@ -96,18 +98,18 @@ ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _isExpMapNormalize
 	
 }
 
-ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormalized, bool _createExpRatioMap) : 
-	ExpRatioEvaluator(_expPath, _isExpMapNormalized, _createExpRatioMap, 120, 140, 10)
+ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormalized,bool _createExpNormalizedMap, bool _createExpRatioMap) : 
+	ExpRatioEvaluator(_expPath, _isExpMapNormalized,_createExpNormalizedMap, _createExpRatioMap, 120, 140, 10)
 		
 {
 			
 }
-ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap ,bool _isExpMapNormalized, bool _createExpRatioMap) : 
-	ExpRatioEvaluator(_agileMap, _isExpMapNormalized, _createExpRatioMap, 120, 140, 10)
+ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap ,bool _isExpMapNormalized, bool _createExpNormalizedMap, bool _createExpRatioMap) : 
+	ExpRatioEvaluator(_agileMap, _isExpMapNormalized, _createExpNormalizedMap, _createExpRatioMap, 120, 140, 10)
 { 
 			
 }
-
+ 
 
 
 void ExpRatioEvaluator::createAndWriteImages(){
@@ -116,11 +118,14 @@ void ExpRatioEvaluator::createAndWriteImages(){
 	//if the exp map given in input is NOT already normalized 
 	if(! isExpMapNormalized){
 		normalizedImage = createNormalizedImage();
-		writeMatrixDataInAgileMapFile("norm.exp", normalizedImage);
-	 }else{
+	}else{
 		normalizedImage = image;
 	}
 		
+	//expRatioNormalized image
+	if(createExpNormalizedMap){
+		writeMatrixDataInAgileMapFile("norm.exp", normalizedImage);
+	}
 	
 
 	//expRatio image

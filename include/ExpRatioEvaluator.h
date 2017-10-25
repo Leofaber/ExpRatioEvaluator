@@ -38,16 +38,16 @@ class ExpRatioEvaluator
 
 		
 		// Creates image extracting pixel values from expPath.
-		ExpRatioEvaluator(const char * expPath,bool isExpMapNormalized, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
+		ExpRatioEvaluator(const char * expPath,bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 		
 		// Creates image extracting pixel values from expPath. Default paramteres.
-		ExpRatioEvaluator(const char * expPath, bool isExpMapNormalized, bool createExpRatioMap);
+		ExpRatioEvaluator(const char * expPath, bool isExpMapNormalized,bool createExpNormalizedMap, bool createExpRatioMap);
 		 
 		// Creates image extracting pixel values from AgileMap.
-		ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
+		ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 
 		//  Creates image extracting pixel values from AgileMap. Default paramteres.
-		ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpRatioMap);
+		ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpNormalizedMap,bool createExpRatioMap);
 		
 
 	
@@ -78,7 +78,7 @@ class ExpRatioEvaluator
 		/*
 			PRIVATE CONSTRUCTOR: sets the parameters 
 		*/
-		ExpRatioEvaluator(bool isExpMapAlreadyNormalized, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
+		ExpRatioEvaluator(bool isExpMapAlreadyNormalized, bool _createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 
 
 
@@ -109,6 +109,7 @@ class ExpRatioEvaluator
 	
 		// If true, creates the expRatio map
 		bool createExpRatioMap;
+		bool createExpNormalizedMap;
 
 		// Lenght of fits data axes
 		int rows;
