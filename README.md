@@ -1,4 +1,4 @@
-# ExpRatioEvaluator 1.0.10
+# ExpRatioEvaluator 1.0.11
 
 La routine exp-ratio permette di valutare quando una “detection” o “spot” è troppo vicina ai bordi dell’esposure AGILE.
 Tutte le valutazioni vengono fatte su di una mappa exp NORMALIZZATA. (se la mappa in input NON è normalizzata, il software provvederà a normalizzarla)
@@ -22,13 +22,13 @@ La mappa viene normalizzata per renderla indipendente dal tempo di esposizione e
 
 La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che deve essere instanziata chiamando i seguenti costruttori:
 	
-	ExpRatioEvaluator(const char * expPath, bool isExpMapNormalized, bool createExpRatioMap);
+	ExpRatioEvaluator(const char * expPath, bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap);
 	
-	ExpRatioEvaluator(const char * expPath, bool isExpMapNormalized, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
+	ExpRatioEvaluator(const char * expPath, bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 	
-	ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpRatioMap);
+	ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap);
 	
-	ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
+	ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 
 
 ### Parametri del costruttore
@@ -39,13 +39,15 @@ La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che dev
     
     isExpMapNormalized : se il valore è false, si afferma che la mappa exp in input NON è normalizzata. Il software provvederà a normalizzarla.
     
-    createExpRatioMap : se è true verrà creata la mappa exp-ratio.
+    createExpNormalizedMap : se il valore è true verrà scritta su file la mappa normalizzata.
     
-    minThreshold : la soglia minima per la creazione della mappa exp-ratio. (Se onNormalizedMap==true -> default 100 else default 0)
+    createExpRatioMap : se il valore è true verrà scritta su file la mappa exp-ratio.
     
-    maxThreshold : la soglia minima per la creazione della mappa exp-ratio. (Se onNormalizedMap==true -> default 120 else default 140)
+    minThreshold : la soglia minima per le valutazioni della mappa exp-ratio. (default = 100)
     
-    squareSize : la dimensione in pixel del lato del quadrato dell'area di analisi exp-ratio. (default 20)
+    maxThreshold : la soglia minima per le valutazioni della mappa exp-ratio. (default = 140)
+    
+    squareSize : la dimensione in pixel del lato del quadrato dell'area di analisi exp-ratio. (default = 20)
 
 
 Per calcolare exp-ratio si deve chiamare il metodo:
@@ -55,12 +57,12 @@ Per calcolare exp-ratio si deve chiamare il metodo:
     l : longitudine galattica 
 	
     b : latitudine galattica
-
+    
 ### Output costruttore
 
 Il costruttore crea e scrive su file due mappe a seconda dei parametri di input:
 
-	Se isExpMapNormalized == false, crea la mappa normalizzata il cui filename sarà:  expPath + "_norm.exp.gz", apribile con ds9
+	Se createExpNormalizedMap == true, crea la mappa normalizzata il cui filename sarà:  expPath + "_norm.exp.gz", apribile con ds9
   
 	Se createExpRatioMap == true, crea la mappa exp-ratio (in cui ogni pixel è un exp-ratio centrato sul pixel stesso) il cui filename sarà: expPath + "_norm_exp.gz" con ds9
 	
