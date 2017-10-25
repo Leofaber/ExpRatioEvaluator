@@ -16,6 +16,8 @@ ExpRatioEvaluator::ExpRatioEvaluator(bool _isExpMapNormalized, bool _createExpNo
 	isExpMapNormalized = _isExpMapNormalized;
 	
 	createExpNormalizedMap = _createExpNormalizedMap;
+
+	createExpRatioMap = _createExpRatioMap;
 	
 	minThreshold = _minThreshold;
 	
@@ -23,7 +25,7 @@ ExpRatioEvaluator::ExpRatioEvaluator(bool _isExpMapNormalized, bool _createExpNo
 
 	squareSize = _squareSize;
 
-	createExpRatioMap = _createExpRatioMap;
+
 
 }
 
@@ -33,14 +35,12 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormali
 
 	expPath=_expPath;
 	agileMap=new AgileMap(expPath);
-	//cdelt2 = agileMap->GetYbin();
-	//squareSize = _squareSize/cdelt2;
-
+	cdelt2 = agileMap->GetYbin();	
 	/*
 		Reading from file .exp
 	*/
 		
-	// Computes double ** image -> FORSE SI PUO' FARE ANCHE QUESTO CON AGILE MAP? CI GUARDO IO, PER ADESSO LASCIALO COSI'
+
 	if(! convertFitsDataToMatrix() )
 	{
 		fprintf( stderr, "[ExpRatioEvaluator] ERROR!! convertFitsDataToMatrix(): error reading fits file\n");
@@ -63,8 +63,8 @@ ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _isExpMapNormalize
 
 	agileMap=&_agileMap;
 
-	//cdelt2 = agileMap->GetYbin();	
-	//squareSize = _squareSize/cdelt2;
+	cdelt2 = agileMap->GetYbin();	
+
 
 	expPath = agileMap->GetFileName();
 	rows = agileMap->Rows(); 
@@ -446,6 +446,8 @@ double ** ExpRatioEvaluator::computeSpatialNormalizationFactorMatrix(){
 			double center_b = agileMap->GetMapCenterB();
 			double fctr4Normalization = 0.0003046174197867085688996857673060958405 * cdelt2 * cdelt2;
 			
+			 
+
 			double ** normalizationFactorMatrix = new double*[rows];
 			for(int i = 0; i < rows; ++i) {
 				normalizationFactorMatrix[i] = new double[cols];
@@ -469,7 +471,10 @@ double ** ExpRatioEvaluator::computeSpatialNormalizationFactorMatrix(){
 			for(int j=0; j<dMcols; ++j) {
 				
 				double distance =agileMap->SrcDist(i,j,center_l,center_b);
-								
+
+ 
+ 
+
 				if(distance!=0){
 				
 					normalizationFactorMatrix[i][j] =  fctr4Normalization * Alikesinaa(0.0174532925199432954743716805978692718782 * distance);	 
@@ -497,7 +502,8 @@ double ** ExpRatioEvaluator::computeSpatialNormalizationFactorMatrix(){
 
 
 double ** ExpRatioEvaluator::createNormalizedImage(){
-
+	cout << "Normalizing image... " << endl;
+	
 	// Computes time normalization factor
 	double timeFactor = agileMap->GetTstop()  -  agileMap->GetTstart();
  
@@ -514,6 +520,7 @@ double ** ExpRatioEvaluator::createNormalizedImage(){
 	for(int i = 0 ; i < rows; ++i) {
 		for(int j = 0 ; j < cols; ++ j) {
 			normalizedImage[i][j] = image[i][j]/ (  timeFactor * normalizationFactorMatrix[i][j] );
+
 		}
 	}
 	

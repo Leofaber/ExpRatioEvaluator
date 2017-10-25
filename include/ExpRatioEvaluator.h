@@ -78,7 +78,7 @@ class ExpRatioEvaluator
 		/*
 			PRIVATE CONSTRUCTOR: sets the parameters 
 		*/
-		ExpRatioEvaluator(bool isExpMapAlreadyNormalized, bool _createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
+		ExpRatioEvaluator(bool isExpMapAlreadyNormalized, bool createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 
 
 
@@ -121,9 +121,9 @@ class ExpRatioEvaluator
 
 		// The images 	
 		double ** image;
-
 		double ** normalizedImage;
 		double ** expRatioImage;
+		
 		double ** normalizationFactorMatrix;
 
 		// The output array  [ exp-ratio, nBad, nTot, greyLevelMean ]	
