@@ -9,9 +9,9 @@
  * https://github.com/Leofaber/ExpRatioEvaluator
 */
 
-
+/*
 #include <iostream>
-#include <sstream>
+
 #include <stdlib.h> 
 #include <stdio.h>
 #include <iomanip>
@@ -19,10 +19,13 @@
 #include <cmath>
 #include <string>
 #include <algorithm>
-
+*/
+#include <string>
+#include <sstream>
 #include "AgileMap.h"
 #include "FitsUtils.h"
 #include "AlikeData5.h"
+
 
 using namespace std;
 
@@ -45,8 +48,11 @@ class ExpRatioEvaluator
 		ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, double squareSize);
 
 		 
-
-	
+		/*
+			DESTRUCTOR
+		*/
+		void clearHeap();
+		~ExpRatioEvaluator();
 
 		/*
 			PUBLIC METHODS
@@ -67,7 +73,7 @@ class ExpRatioEvaluator
 		// Get ExpRatio Parameters
 		double getMinThreshold();
 		double getMaxThreshold();
-		int getSquareSize();
+		double getSquareSize();
 
 	private:
 
@@ -86,7 +92,7 @@ class ExpRatioEvaluator
 
 
 		// Utility class	
-		AgileMap* agileMap;
+		AgileMap agileMap;
 
 		const char* expPath;
 	
@@ -98,7 +104,7 @@ class ExpRatioEvaluator
 		double maxThreshold;
 	
 		// The size of the rectangle (x-size , x+size, y-size, y+size)
-		float squareSize;
+		double squareSize;
 
 		// If false, the exp map given in input must be normalized
 		bool isExpMapNormalized;

@@ -10,30 +10,51 @@
 */
 
 #include "ExpRatioEvaluator.h"
+ 
+void ExpRatioEvaluator::clearHeap(){
 
-/*DELEGATE CONSTRUCTOR NOT COMPATIBLE WITH GCC 4.7
-ExpRatioEvaluator::ExpRatioEvaluator(bool _isExpMapNormalized, bool _createExpNormalizedMap, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, int _squareSize){
+	for (int i=0; i<cols; i++){
+		
+		//cout <<" lol ";
+		delete [] image[i];
+	}
+	delete [] image;
 
-	isExpMapNormalized = _isExpMapNormalized;
 	
-	createExpNormalizedMap = _createExpNormalizedMap;
-
-	createExpRatioMap = _createExpRatioMap;
-	
-	minThreshold = _minThreshold;
-	
-	maxThreshold = _maxThreshold;
-
-	squareSize = _squareSize;
-
-
-
 }
-*/
+
+ExpRatioEvaluator::~ExpRatioEvaluator()
+{
+/*
+	cout << "~ExpRatioEvaluator()..." << cols<<endl;
+	for (int i=0; i<cols; i++){
+		
+		//cout <<" lol ";
+		delete [] image[i];
+	}
+	delete [] image;*/
+/*
+	for (int i=0; i<cols; i++)
+    		delete [] expRatioImage[i];
+	delete [] expRatioImage;
+
+	for (int i=0; i<cols; i++)
+    		delete [] normalizationFactorMatrix[i];
+	delete [] normalizationFactorMatrix;
+
+	for (int i=0; i<cols; i++)
+    		delete [] normalizedImage[i];
+	delete [] normalizedImage;*/
+
+	
+	
+	
+}
 
 
-ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormalized, bool _createExpNormalizedMap,bool _createExpRatioMap, double _minThreshold, double _maxThreshold, double _squareSize) /*:
-	ExpRatioEvaluator(_isExpMapNormalized, _createExpNormalizedMap,_createExpRatioMap, _minThreshold, _maxThreshold, _squareSize)*/
+
+
+ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormalized, bool _createExpNormalizedMap,bool _createExpRatioMap, double _minThreshold, double _maxThreshold, double _squareSize) : agileMap(_expPath)
 {	
 	isExpMapNormalized = _isExpMapNormalized;
 	
@@ -53,17 +74,19 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormali
 
 	expPath=_expPath;
 
-	agileMap=new AgileMap(expPath);
-	cdelt2 = agileMap->GetYbin();	
+ 
+	
+	cdelt2 = agileMap.GetYbin();	
+ 	squareSize = _squareSize/cdelt2;
 
-	squareSize = _squareSize/cdelt2;
-
+	
 
 	/*
 		Reading from file .exp
 	*/
 		
-
+	//image = MapConverter::mapPathToDoublePtr();
+	//MapConverter::mapPathToDoublePtr(expPath);
 	if(! convertFitsDataToMatrix() )
 	{
 		fprintf( stderr, "[ExpRatioEvaluator] ERROR!! convertFitsDataToMatrix(): error reading fits file\n");
@@ -76,7 +99,7 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormali
 
 
 
-ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _isExpMapNormalized, bool _createExpNormalizedMap, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, double _squareSize) /*:
+ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _isExpMapNormalized, bool _createExpNormalizedMap, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, double _squareSize) : agileMap(_agileMap)/*:
 	ExpRatioEvaluator(_isExpMapNormalized, _createExpNormalizedMap, _createExpRatioMap, _minThreshold, _maxThreshold, _squareSize)*/
 {
 	isExpMapNormalized = _isExpMapNormalized;
@@ -97,14 +120,12 @@ ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _isExpMapNormalize
 		Reading from AgileMap object 
 	*/
 
-	agileMap=&_agileMap;
-	cdelt2 = agileMap->GetYbin();	
-
-	squareSize = _squareSize/cdelt2;
-
-	expPath = agileMap->GetFileName();
-	rows = agileMap->Rows(); 
-	cols = agileMap->Cols();
+ 
+	cdelt2 = agileMap.GetYbin();	
+ 	squareSize = _squareSize/cdelt2;
+ 	expPath = agileMap.GetFileName();
+	rows = agileMap.Rows(); 
+	cols = agileMap.Cols();
 
 
 
@@ -117,7 +138,7 @@ ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _isExpMapNormalize
  
 	}
 	
-	double * data = agileMap->Buffer();
+	double * data = agileMap.Buffer();
 
  
  
@@ -183,7 +204,8 @@ double ExpRatioEvaluator::getMinThreshold(){
 double ExpRatioEvaluator::getMaxThreshold(){
 	return maxThreshold;
 }
-int ExpRatioEvaluator::getSquareSize(){
+double ExpRatioEvaluator::getSquareSize(){
+	cout << "ss: " << squareSize << endl;
 	return squareSize;
 }
 
@@ -191,14 +213,14 @@ bool ExpRatioEvaluator::convertFitsDataToMatrix()
 {
 	
 	//CFITSIO
-	fitsfile *fptr;   /* FITS file pointer, defined in fitsio.h */
-	int status = 0;   /* CFITSIO status value MUST be initialized to zero! */
+	fitsfile *fptr;    //FITS file pointer, defined in fitsio.h 
+	//int status = 0;   // CFITSIO status value MUST be initialized to zero! 
 	int bitpix, naxis, ii, anynul;
 	long naxes[2] = { 1, 1 }, fpixel[2] = { 1, 1 };
 	double *pixels;
 	char format[20], hdformat[20];
 		
- 
+ 	int status;
 
 	if (!fits_open_file(&fptr, expPath, READONLY, &status))
 	{									// 16   , 2     , {166,166}
@@ -219,7 +241,7 @@ bool ExpRatioEvaluator::convertFitsDataToMatrix()
 					image[i] = new double[cols];
 				}
 
-				/* get memory for 1 row */
+				// get memory for 1 row 
 				pixels = (double *)malloc(naxes[0] * sizeof(double));
 
 				if (pixels == NULL)
@@ -229,14 +251,14 @@ bool ExpRatioEvaluator::convertFitsDataToMatrix()
 				}
 				else
 				{
-					/* loop over all the rows in the image, top to bottom */
+					// loop over all the rows in the image, top to bottom 
 
 					int col_index = 0;
 					int row_index = 0;
 					for (fpixel[1] = naxes[1]; fpixel[1] >= 1; fpixel[1]--)
 					{
-						if (fits_read_pix(fptr, TDOUBLE, fpixel, naxes[0], NULL, pixels, NULL, &status))  /* read row of pixels */
-							break;  /* jump out of loop on error */
+						if (fits_read_pix(fptr, TDOUBLE, fpixel, naxes[0], NULL, pixels, NULL, &status))  // read row of pixels 
+							break;  // jump out of loop on error 
 
 						for (ii = 0; ii < naxes[0]; ii++)
 						{
@@ -299,7 +321,7 @@ double ExpRatioEvaluator::computeExpRatioValues(double l, double b)
 	int x;
 	int y;
 
-	agileMap->GetRowCol(l,b,&x,&y);
+	agileMap.GetRowCol(l,b,&x,&y);
 	if(x < 0 || x > cols-1 || y < 0 || y > rows-1)
 	{
 		fprintf( stderr, "[ExpRatioEvaluator] ERROR!! computeExpRatioValues(double l, double b):  Map .cts and Map .exp are not centered in the same galactic coordinate because input l and input b go out of the .exp map\n");
@@ -467,8 +489,8 @@ double ** ExpRatioEvaluator::computeSpatialNormalizationFactorMatrix(){
 			// Initializes a distance matrix.
 			int dMrows = rows/2;
 			int dMcols =  cols/2;
-			double center_l = agileMap->GetMapCenterL();
-			double center_b = agileMap->GetMapCenterB();
+			double center_l = agileMap.GetMapCenterL();
+			double center_b = agileMap.GetMapCenterB();
 			double fctr4Normalization = 0.0003046174197867085688996857673060958405 * cdelt2 * cdelt2;
 			
 			 
@@ -495,7 +517,7 @@ double ** ExpRatioEvaluator::computeSpatialNormalizationFactorMatrix(){
 		for(int i=0; i<dMrows; ++i) {
 			for(int j=0; j<dMcols; ++j) {
 				
-				double distance =agileMap->SrcDist(i,j,center_l,center_b);
+				double distance =agileMap.SrcDist(i,j,center_l,center_b);
 
  
  
@@ -530,7 +552,7 @@ double ** ExpRatioEvaluator::createNormalizedImage(){
 	cout << "Normalizing image... " << endl;
 	
 	// Computes time normalization factor
-	double timeFactor = agileMap->GetTstop()  -  agileMap->GetTstart();
+	double timeFactor = agileMap.GetTstop()  -  agileMap.GetTstart();
  
 	// Computes spatial normalization factor matrix
 	double ** normalizationFactorMatrix = computeSpatialNormalizationFactorMatrix();
@@ -601,41 +623,41 @@ int ExpRatioEvaluator::writeMatrixDataInAgileMapFile(const char * appendToFilena
 
 	f.WriteKey("CTYPE1", "GLON-ARC");
 	f.WriteKey("CTYPE2", "GLAT-ARC");
-	f.WriteKey("CRPIX1", agileMap->GetX0());
-	f.WriteKey("CRVAL1", agileMap->GetMapCenterL());
-	f.WriteKey("CDELT1", agileMap->GetXbin());
-	f.WriteKey("CRPIX2", agileMap->GetY0());
-	f.WriteKey("CRVAL2", agileMap->GetMapCenterB());
-	f.WriteKey("CDELT2", agileMap->GetYbin());
-	f.WriteKey("LONPOLE", agileMap->GetLonpole());
-	f.WriteKey("MINENG", agileMap->GetEmin());
-	f.WriteKey("MAXENG", agileMap->GetEmax());
-	f.WriteKey("INDEX", agileMap->GetMapIndex());
-	f.WriteKey("SC-Z-LII", agileMap->GetLpoint());
-	f.WriteKey("SC-Z-BII", agileMap->GetBpoint());
+	f.WriteKey("CRPIX1", agileMap.GetX0());
+	f.WriteKey("CRVAL1", agileMap.GetMapCenterL());
+	f.WriteKey("CDELT1", agileMap.GetXbin());
+	f.WriteKey("CRPIX2", agileMap.GetY0());
+	f.WriteKey("CRVAL2", agileMap.GetMapCenterB());
+	f.WriteKey("CDELT2", agileMap.GetYbin());
+	f.WriteKey("LONPOLE", agileMap.GetLonpole());
+	f.WriteKey("MINENG", agileMap.GetEmin());
+	f.WriteKey("MAXENG", agileMap.GetEmax());
+	f.WriteKey("INDEX", agileMap.GetMapIndex());
+	f.WriteKey("SC-Z-LII", agileMap.GetLpoint());
+	f.WriteKey("SC-Z-BII", agileMap.GetBpoint());
 	//f.WriteKey("SC-LONPL", m_gp);
 
-	const char * m_dateObs = agileMap->GetStartDate();
-	const char * m_dateEnd = agileMap->GetEndDate();
+	const char * m_dateObs = agileMap.GetStartDate();
+	const char * m_dateEnd = agileMap.GetEndDate();
 
 	if (m_dateObs[0])
 		f.WriteKey("DATE-OBS", m_dateObs);
 	if (m_dateEnd[0])
 		f.WriteKey("DATE-END", m_dateEnd);
 
-	f.WriteKey("TSTART", agileMap->GetTstart());
-	f.WriteKey("TSTOP", agileMap->GetTstop());
-	f.WriteKey("FOVMIN", agileMap->GetFovMin());
-	f.WriteKey("FOV", agileMap->GetFovMax());
-	f.WriteKey("ALBEDO", agileMap->GetAlbedo());
-	f.WriteKey("PHASECOD", agileMap->GetPhaseCode());
+	f.WriteKey("TSTART", agileMap.GetTstart());
+	f.WriteKey("TSTOP", agileMap.GetTstop());
+	f.WriteKey("FOVMIN", agileMap.GetFovMin());
+	f.WriteKey("FOV", agileMap.GetFovMax());
+	f.WriteKey("ALBEDO", agileMap.GetAlbedo());
+	f.WriteKey("PHASECOD", agileMap.GetPhaseCode());
 
-	double m_step = agileMap->GetStep();
+	double m_step = agileMap.GetStep();
 	if (m_step)
 		f.WriteKey("STEP", m_step);
 
-	const char * m_skyL = agileMap->GetSkyL();
-	const char * m_skyH = agileMap->GetSkyH();
+	const char * m_skyL = agileMap.GetSkyL();
+	const char * m_skyH = agileMap.GetSkyH();
 
 	if (m_skyL[0])
 		f.WriteKey("SKYL", m_skyL);
@@ -645,6 +667,8 @@ int ExpRatioEvaluator::writeMatrixDataInAgileMapFile(const char * appendToFilena
 	if (f.Status())
 		cerr << "ERROR " << f.Status() << " writing to " << newFileNameC << endl;
 	
+ 
+
 	return f.Status();
 
 
@@ -656,7 +680,7 @@ string ExpRatioEvaluator::computeNewFileName(const char * appendToFilename){
 
 	//cout << "append: " << appendToFilename << endl;
 	
-  	const char * imageName = agileMap->GetFileName(); // e.g.    MAP1000s.exp
+  	const char * imageName = agileMap.GetFileName(); // e.g.    MAP1000s.exp
 	
 	//cout << "imageName_cstr: " << imageName << endl;
 
@@ -715,9 +739,9 @@ string ExpRatioEvaluator::computeNewFileName(const char * appendToFilename){
 	
 	
 	ostringstream sqrSizeStringStream;
-	sqrSizeStringStream<<squareSize;
+	sqrSizeStringStream<<squareSize*cdelt2;
 	string sqrSize_str = sqrSizeStringStream.str();
-    
+    	
     
 	   
 
