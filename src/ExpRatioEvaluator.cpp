@@ -10,52 +10,22 @@
 */
 
 #include "ExpRatioEvaluator.h"
- 
-void ExpRatioEvaluator::clearHeap(){
-
-	for (int i=0; i<cols; i++){
-		
-		//cout <<" lol ";
-		delete [] image[i];
-	}
-	delete [] image;
-
-	
-}
-
-ExpRatioEvaluator::~ExpRatioEvaluator()
-{
-/*
-	cout << "~ExpRatioEvaluator()..." << cols<<endl;
-	for (int i=0; i<cols; i++){
-		
-		//cout <<" lol ";
-		delete [] image[i];
-	}
-	delete [] image;*/
-/*
-	for (int i=0; i<cols; i++)
-    		delete [] expRatioImage[i];
-	delete [] expRatioImage;
-
-	for (int i=0; i<cols; i++)
-    		delete [] normalizationFactorMatrix[i];
-	delete [] normalizationFactorMatrix;
-
-	for (int i=0; i<cols; i++)
-    		delete [] normalizedImage[i];
-	delete [] normalizedImage;*/
-
-	
-	
-	
-}
 
 
 
 
-ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormalized, bool _createExpNormalizedMap,bool _createExpRatioMap, double _minThreshold, double _maxThreshold, double _squareSize) : agileMap(_expPath)
+
+ExpRatioEvaluator::ExpRatioEvaluator(	const char * _expPath,
+					bool _isExpMapNormalized, 
+					bool _createExpNormalizedMap,
+					bool _createExpRatioMap, 
+					double _minThreshold, 
+					double _maxThreshold,
+					double _squareSize
+				    ) : agileMap(_expPath)
 {	
+	cout << "\n**ExpRatioEvaluator - started!" << endl;
+	
 	isExpMapNormalized = _isExpMapNormalized;
 	
 	createExpNormalizedMap = _createExpNormalizedMap;
@@ -66,15 +36,7 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormali
 	
 	maxThreshold = _maxThreshold;
 
-	
-
-
-
-
-
 	expPath=_expPath;
-
- 
 	
 	cdelt2 = agileMap.GetYbin();	
  	squareSize = _squareSize/cdelt2;
@@ -89,7 +51,7 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormali
 	//MapConverter::mapPathToDoublePtr(expPath);
 	if(! convertFitsDataToMatrix() )
 	{
-		fprintf( stderr, "[ExpRatioEvaluator] ERROR!! convertFitsDataToMatrix(): error reading fits file\n");
+		fprintf( stderr, "*ERROR: convertFitsDataToMatrix(): error reading fits file\n");
 		exit (EXIT_FAILURE);
 	}
 	
@@ -99,9 +61,19 @@ ExpRatioEvaluator::ExpRatioEvaluator(const char * _expPath,bool _isExpMapNormali
 
 
 
-ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _isExpMapNormalized, bool _createExpNormalizedMap, bool _createExpRatioMap, double _minThreshold, double _maxThreshold, double _squareSize) : agileMap(_agileMap)/*:
-	ExpRatioEvaluator(_isExpMapNormalized, _createExpNormalizedMap, _createExpRatioMap, _minThreshold, _maxThreshold, _squareSize)*/
+ExpRatioEvaluator::ExpRatioEvaluator(
+					AgileMap _agileMap, 
+					bool _isExpMapNormalized, 
+					bool _createExpNormalizedMap, 
+					bool _createExpRatioMap, 
+					double _minThreshold, 
+					double _maxThreshold, 
+					double _squareSize
+					) : agileMap(_agileMap)
 {
+
+	cout << "\n**ExpRatioEvaluator - started!" << endl;
+
 	isExpMapNormalized = _isExpMapNormalized;
 	
 	createExpNormalizedMap = _createExpNormalizedMap;
@@ -144,7 +116,7 @@ ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _isExpMapNormalize
  
 	for(int i = 0; i < rows; i++){
 		for(int j = 0; j < cols ; j++){
-			image[cols-1-j][i] = data[i*cols+j]; // il problema dell'altra volta è che nell'array 
+			image[cols-1-j][i] = data[i*cols+j];
 		}
 	}
 	 
@@ -152,6 +124,38 @@ ExpRatioEvaluator::ExpRatioEvaluator(AgileMap _agileMap, bool _isExpMapNormalize
 	createAndWriteImages();
 	
 
+	
+}
+
+
+ 
+void ExpRatioEvaluator::clearHeap(){
+
+	cout << "*Clearing Heap.." << endl;
+	// deleting image
+	for (int i=0; i<cols; i++)
+		delete [] image[i];
+	delete [] image;
+
+
+	// deleting normalized image (only if it has been created)
+	if(! isExpMapNormalized){
+		for (int i=0; i<cols; i++)
+			delete [] normalizedImage[i];
+		delete [] normalizedImage;
+
+		for (int i=0; i<cols; i++)
+    			delete [] normalizationFactorMatrix[i];
+		delete [] normalizationFactorMatrix;
+	}
+
+	// deleting exp ratio image
+	if(createExpRatioMap){
+		for (int i=0; i<cols; i++)
+			delete [] expRatioImage[i];
+		delete [] expRatioImage;	
+	}
+	cout << "*Clearing Heap completed!" << endl;
 	
 }
 
@@ -164,6 +168,7 @@ void ExpRatioEvaluator::createAndWriteImages(){
 	//if the exp map given in input is NOT already normalized 
 	if(! isExpMapNormalized){
 		normalizedImage = createNormalizedImage();
+
 	}else{
 		normalizedImage = image;
 	}
@@ -214,21 +219,20 @@ bool ExpRatioEvaluator::convertFitsDataToMatrix()
 	
 	//CFITSIO
 	fitsfile *fptr;    //FITS file pointer, defined in fitsio.h 
-	//int status = 0;   // CFITSIO status value MUST be initialized to zero! 
+	int status = 0;   // CFITSIO status value MUST be initialized to zero! 
 	int bitpix, naxis, ii, anynul;
 	long naxes[2] = { 1, 1 }, fpixel[2] = { 1, 1 };
 	double *pixels;
 	char format[20], hdformat[20];
 		
- 	int status;
-
+ 	
 	if (!fits_open_file(&fptr, expPath, READONLY, &status))
 	{									// 16   , 2     , {166,166}
 		if (!fits_get_img_param(fptr, 2, &bitpix, &naxis, naxes, &status))
 		{
 			if (naxis > 2 || naxis == 0)
 			{
-				printf("Error: only 1D or 2D images are supported\n");
+				printf("*ERROR: only 1D or 2D images are supported\n");
 				return false;
 			}			
 			else
@@ -246,7 +250,7 @@ bool ExpRatioEvaluator::convertFitsDataToMatrix()
 
 				if (pixels == NULL)
 				{
-					printf("Memory allocation error - Press any key to exit\n");
+					printf("*Memory allocation error - Press any key to exit\n");
 					return false;
 				}
 				else
@@ -285,7 +289,7 @@ bool ExpRatioEvaluator::convertFitsDataToMatrix()
 	}
 	if (status>0)
 	{
-		printf("Can't open fits file - Press any key to exit\n");
+		cout << "*ERROR: Can't open fits file " << expPath << endl; 
 		return false;	
 	}
 
@@ -324,7 +328,7 @@ double ExpRatioEvaluator::computeExpRatioValues(double l, double b)
 	agileMap.GetRowCol(l,b,&x,&y);
 	if(x < 0 || x > cols-1 || y < 0 || y > rows-1)
 	{
-		fprintf( stderr, "[ExpRatioEvaluator] ERROR!! computeExpRatioValues(double l, double b):  Map .cts and Map .exp are not centered in the same galactic coordinate because input l and input b go out of the .exp map\n");
+		fprintf( stderr, "*ERROR: computeExpRatioValues(double l, double b):  Map .cts and Map .exp are not centered in the same galactic coordinate because input l and input b go out of the .exp map\n");
 		output[0] =  -2;
 		output[1] =  -2;
 		output[2] =  -2;
@@ -412,7 +416,7 @@ double ExpRatioEvaluator::computeExpRatio(int x, int y){
 double ** ExpRatioEvaluator::createExpRatioPixelMap(){
 
 
-
+		cout << "*Creating exp ratio image.."<<endl;
 		// GENERAZIONE DELLA MAPPA IN CUI OGNI PIXEL E' UN EXP-RATIO
 			
 		// il seguente codice, data la mappa normalizzata, crea una seconda mappa, in cui ogni pixel è il valore di exp-ratio centrato
@@ -451,10 +455,8 @@ double ** ExpRatioEvaluator::createExpRatioPixelMap(){
 			
 		}
 		
-		
+		cout << "*Creating exp ratio image completed!"<<endl;
 		return expRatioMap;
-
-
 }
 
 
@@ -476,6 +478,7 @@ double ExpRatioEvaluator::Alikesinaa(double input){
 // OPTIMIZED CODE!
 double ** ExpRatioEvaluator::computeSpatialNormalizationFactorMatrix(){
 			
+			cout << "*Computing normalization factors matrix.." << endl;
 			/*
 					D D D X X X
 					D D D X X X
@@ -542,6 +545,8 @@ double ** ExpRatioEvaluator::computeSpatialNormalizationFactorMatrix(){
 				}
 			}
 		}
+
+		cout << "*Computing normalization factors matrix completed!" << endl;
 		return normalizationFactorMatrix;
 				
 }
@@ -549,9 +554,10 @@ double ** ExpRatioEvaluator::computeSpatialNormalizationFactorMatrix(){
 
 
 double ** ExpRatioEvaluator::createNormalizedImage(){
-	cout << "Normalizing image... " << endl;
+
+	cout << "*Normalizing image... " << endl;
 	
-	// Computes time normalization factor
+// Computes time normalization factor
 	double timeFactor = agileMap.GetTstop()  -  agileMap.GetTstart();
  
 	// Computes spatial normalization factor matrix
@@ -560,9 +566,9 @@ double ** ExpRatioEvaluator::createNormalizedImage(){
 	
 	// Computes normalizedImage!! 
 	double ** normalizedImage = new double*[rows];
-			for(int i = 0; i < rows; ++i) {
-				normalizedImage[i] = new double[cols];
-			}
+	for(int i = 0; i < rows; ++i) {
+		normalizedImage[i] = new double[cols];
+	}
 			
 	for(int i = 0 ; i < rows; ++i) {
 		for(int j = 0 ; j < cols; ++ j) {
@@ -570,7 +576,8 @@ double ** ExpRatioEvaluator::createNormalizedImage(){
 
 		}
 	}
-	
+			
+	cout << "*Normalization completed!" << endl;
 	return normalizedImage;
 
 }
@@ -578,7 +585,8 @@ double ** ExpRatioEvaluator::createNormalizedImage(){
  
 int ExpRatioEvaluator::writeMatrixDataInAgileMapFile(const char * appendToFilename, double ** matrixData){  
 	
-	//cout << "Writing Matrix Data in fits file.."<<endl;
+	cout << "*Writing data " << appendToFilename <<" in fits file.."<<endl;
+
 	/// Computes new filename
 	const char * newFileNameC;
 
@@ -594,11 +602,11 @@ int ExpRatioEvaluator::writeMatrixDataInAgileMapFile(const char * appendToFilena
  	FitsFile f;
 
 	if (!f.Create(newFileNameC)) {
-		cerr << "ERROR " << f.Status() << " creating " << newFileNameC << endl;
+		cerr << "*ERROR " << f.Status() << " creating " << newFileNameC << endl;
 		return f.Status();
 	}
 	else
-		cout << "Created "<<newFileNameC << endl;	
+		cout << "*Created "<<newFileNameC << endl;	
 
 	
 	int bitpix = DOUBLE_IMG;
@@ -665,8 +673,9 @@ int ExpRatioEvaluator::writeMatrixDataInAgileMapFile(const char * appendToFilena
 		f.WriteKey("SKYH", m_skyH);
 
 	if (f.Status())
-		cerr << "ERROR " << f.Status() << " writing to " << newFileNameC << endl;
-	
+		cerr << "*ERROR " << f.Status() << " writing to " << newFileNameC << endl;
+	else
+		cout << "*Writing data to" << newFileNameC <<" completed!"<<endl;
  
 
 	return f.Status();
@@ -677,6 +686,8 @@ int ExpRatioEvaluator::writeMatrixDataInAgileMapFile(const char * appendToFilena
 }
 
 string ExpRatioEvaluator::computeNewFileName(const char * appendToFilename){
+	
+	cout << "*Computing fits filename.."<<endl;
 
 	//cout << "append: " << appendToFilename << endl;
 	
@@ -704,20 +715,20 @@ string ExpRatioEvaluator::computeNewFileName(const char * appendToFilename){
 
 	
 	
-    size_t foundPatternExp = imageName_string.find(".exp");
-    size_t foundPatternCts = imageName_string.find(".cts");
+	size_t foundPatternExp = imageName_string.find(".exp");
+	size_t foundPatternCts = imageName_string.find(".cts");
 
-    if(foundPatternExp != string::npos)
-	newFileName = imageName_string.substr(0,foundPatternExp);
-    else if(foundPatternCts != string::npos)
-	newFileName = imageName_string.substr(0,foundPatternCts);
-    else
- 	newFileName = imageName_string;
+	if(foundPatternExp != string::npos)
+		newFileName = imageName_string.substr(0,foundPatternExp);
+	else if(foundPatternCts != string::npos)
+		newFileName = imageName_string.substr(0,foundPatternCts);
+	else
+		newFileName = imageName_string;
 
-    //cout << "new file name = " << newFileName << endl;
+	//cout << "new file name = " << newFileName << endl;
 
-    string appendToFilenameString(appendToFilename);
-    
+	string appendToFilenameString(appendToFilename);
+
 	// convert double to string
 	ostringstream minThresholdStringStream;
 	minThresholdStringStream << minThreshold;
@@ -745,14 +756,15 @@ string ExpRatioEvaluator::computeNewFileName(const char * appendToFilename){
     
 	   
 
-    newFileName +="_"+min_str+"_"+max_str+"_"+sqrSize_str+"_"+appendToFilenameString+".gz";		
+   	newFileName +="_"+min_str+"_"+max_str+"_"+sqrSize_str+"_"+appendToFilenameString+".gz";		
    
-    //cout << "newFileName: " << newFileName << endl;  
+	//cout << "newFileName: " << newFileName << endl;  
 
-  //replace( newFileName.begin(), newFileName.end()-7, '.', '_');
-   // cout << "NewFileName: " << newFileName << endl;
+	//replace( newFileName.begin(), newFileName.end()-7, '.', '_');
+	// cout << "NewFileName: " << newFileName << endl;
 
 
+	cout << "*Computing fits filename completed!"<<endl;
 
 	return newFileName;
 }

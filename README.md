@@ -1,4 +1,4 @@
-# ExpRatioEvaluator 1.0.11
+# ExpRatioEvaluator 1.0.12
 
 La routine exp-ratio permette di valutare quando una “detection” o “spot” è troppo vicina ai bordi dell’esposure AGILE.
 Tutte le valutazioni vengono fatte su di una mappa exp NORMALIZZATA. (se la mappa in input NON è normalizzata, il software provvederà a normalizzarla)
@@ -22,11 +22,9 @@ La mappa viene normalizzata per renderla indipendente dal tempo di esposizione e
 
 La routine exp-ratio è stata incapsulata nella classe ExpRatioEvaluator che deve essere instanziata chiamando i seguenti costruttori:
 	
-	ExpRatioEvaluator(const char * expPath, bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap);
 	
 	ExpRatioEvaluator(const char * expPath, bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 	
-	ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap);
 	
 	ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
 

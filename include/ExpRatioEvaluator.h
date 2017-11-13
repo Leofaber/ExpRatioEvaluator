@@ -39,7 +39,9 @@ class ExpRatioEvaluator
 			If createExpRatioMap == true -> creates createExpRatioMap and writes it on file .exp.gz
 		*/
 
-		
+ 
+
+
 		// Creates image extracting pixel values from expPath.
 		ExpRatioEvaluator(const char * expPath,bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, double squareSize);
 		
@@ -48,11 +50,9 @@ class ExpRatioEvaluator
 		ExpRatioEvaluator(AgileMap agileMap, bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, double squareSize);
 
 		 
-		/*
-			DESTRUCTOR
-		*/
+		
 		void clearHeap();
-		~ExpRatioEvaluator();
+
 
 		/*
 			PUBLIC METHODS
@@ -62,7 +62,7 @@ class ExpRatioEvaluator
 		double computeExpRatioValues(double l, double b);	
 		double computeExpRatioValues(int x, int y, string type);
 
-		// Getting Map
+		// Getters
 		double ** getImage();
 		double ** getExpRatioMap();
 		double ** getNormalizedMap();
@@ -76,15 +76,6 @@ class ExpRatioEvaluator
 		double getSquareSize();
 
 	private:
-
-		/*
-			PRIVATE CONSTRUCTOR: sets the parameters 
-		*/
-		//ExpRatioEvaluator(bool isExpMapNormalized, bool createExpNormalizedMap, bool createExpRatioMap, double minThreshold, double maxThreshold, int squareSize);
-
-
-
-
 
 		/*
 			**************** ATTRIBUTES ****************
